@@ -5,7 +5,7 @@ This is a server that lets admins/owners of a Squad server integrate with discor
 Built with Node.js, TypeScript, Express, Mongoose/MongoDB
 
 
-
+---
 Credit to [Ect0s](https://github.com/ect0s) for initial version of this project. This project is meant to be an updated version written in TypeScript and more features.
 
 The project was started anew due to the old repo containing secrets like API keys, and was becoming a bit of a mess, with many dependencies running on quite old versions.
