@@ -5,11 +5,33 @@ import env from './load-env'
 import { loadRoutes } from "./utils/utils";
 import path from "path";
 import mainRoute from "./routes/main";
+import MongoStore from "connect-mongo";
 
+const cookieMaxAgeHours = 5
 
-
+// TODO add mongo URL here.
 const app = express()
+
 app.use(express.json())
+app.use(session({
+    resave: true,
+    saveUninitialized: true,
+    store: MongoStore.create({mongoUrl: ""}),
+    cookie: {
+        maxAge: (1000 * 60 * 60) * cookieMaxAgeHours
+    },
+    secret: env.sessionSecret
+}))
+
+app.use(express.urlencoded({
+    extended: true
+    })
+)
+
+
+
+
+// MongoStore
 // app.use(sessionStorage)
 // app.use(cookieParser())
 
@@ -19,7 +41,6 @@ app.use(express.json())
 async function webServerStart() {
     const routesPath = path.join(__dirname, 'routes')
     const routes = await loadRoutes(routesPath)
-    console.log(routes)
     app.use(mainRoute)
     routes.forEach(route => {
         console.log('loading route: ', route)
@@ -28,6 +49,11 @@ async function webServerStart() {
     app.listen(env.webPort, () => {
         console.log('Web server up and running on port:', env.webPort)
     })
+}
+
+
+async function logMiddleFunction(req: Request, res: Response) {
+    // req.
 }
 
 
