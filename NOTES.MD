@@ -7,3 +7,6 @@ Implement some sort of button that allows users to authenticate with steam direc
 Potential solution here:
 
 [Integrate steam login with openID](https://medium.com/@jashwanthvemula/how-to-integrate-steam-login-with-openid-connect-bcd9542511bb)
+
+
+May have to keep a "permanent" whitelist group that can't be deleted from the database.
