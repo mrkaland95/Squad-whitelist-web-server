@@ -33,7 +33,7 @@ export enum InGameAdminPermissions {
 A week day corresponding to a number, particularly to inbuilt Javascript
 Date.getDay() method.
  */
-enum WeekDays {
+export enum WeekDays {
     Sunday = 0,
     Monday = 1,
     Tuesday = 2,
@@ -44,7 +44,7 @@ enum WeekDays {
 }
 
 
-interface IDiscordUser extends Document {
+export interface IDiscordUser extends Document {
     DiscordID: string;
     DiscordName: string;
     Roles: string[];
@@ -141,7 +141,7 @@ export const discordUserSchema = new mongoose.Schema<IDiscordUser>({
 
 export const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
     GroupName: { type: String, required: true, unique: true },
-    Permissions: { type: [InGameAdminPermissions], required: true },
+    Permissions: { type: [String], required: true, enum: Object.values(InGameAdminPermissions) },
     Enabled: { type: Boolean, required: true, default: true },
     }, {
         timestamps: true
@@ -153,7 +153,13 @@ export const inGameRoleSchema = new mongoose.Schema<IRole>({
     RoleID: { type: String, required: true, unique: true},
     RoleName: { type: String, required: true },
     AdminGroup: { type: adminGroupsSchema, required: false},
-    ActiveDays: { type: [WeekDays], required: true },
+    ActiveDays: {
+        type: [Number], required: true,
+        validate: {
+            validator: (days: number[]) => days.every(day => Object.values(WeekDays).includes(day)),
+            message: props => `${props.value} is not a valid day of the week`,
+        }
+    },
     WhitelistSlots: { type: Number, required: true, default: 0 },
     Enabled: Boolean,
     }, {
@@ -172,7 +178,8 @@ export const allServerRolesSchema = new mongoose.Schema<IServerRole>({
 
 const listSchema = new mongoose.Schema<IListEndpoints>({
     ListName: { type: String, required: true, unique: true },
-    AdminGroups: { type: [adminGroupsSchema], required: true },
+    AdminGroups: { type: [adminGroupsSchema], required: true, default: [] },
+    // I.e. if all users that has ANY role mapped to the admin group, should be enabled for this list.
     AllRolesEnabled: { type: Boolean, required: true, default: true }
     }, {
         timestamps: true
