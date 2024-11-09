@@ -1,4 +1,4 @@
-import { readdirSync } from "fs";
+import {readdirSync} from "fs";
 import path from "path";
 import {ExpressRoute} from "../types";
 import {pseudoRandomBytes} from "crypto";
