@@ -1,6 +1,8 @@
 import { readdirSync } from "fs";
 import path from "path";
 import {ExpressRoute} from "../types";
+import {pseudoRandomBytes} from "crypto";
+import * as readline from "readline";
 
 
 /**
@@ -20,7 +22,6 @@ export async function loadRoutes(routesPath: string) {
         if (!file.name.endsWith('.ts') && !file.name.endsWith('.js')) continue
         if (file.name.includes('main')) continue
         const filePath = path.join(file.path, file.name)
-        // console.log(filePath)
         const route = require(filePath)?.default
         // TODO add check for actual content of route here.
         if (route) {
@@ -30,3 +31,11 @@ export async function loadRoutes(routesPath: string) {
 
     return routes
 }
+
+export function generateAPIKey(byteCount: number = 50)  {
+    const randomBytes = pseudoRandomBytes(byteCount)
+    return randomBytes.toString('base64')
+}
+
+
+
