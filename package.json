@@ -1,13 +1,13 @@
 {
   "name": "squad-whitelist-management-server",
   "version": "0.1.0",
+  "author": "Flaxelaxen <https://github.com/mrkaland95>",
   "description": "Web server and frontend to manage whitelisting and admin permissions for a Squad game server.",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "npx tsx src/index.ts",
-    "build&run": "npm run build && npm run start"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrkaland95/Squad-whitelist-web-server.git"
   },
   "keywords": [
     "Squad",
@@ -15,11 +15,16 @@
     "Admin",
     "Discord"
   ],
-  "author": "Flaxelaxen",
-  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "npx tsx src/index.ts",
+    "build&run": "npm run build && npm run start"
+  },
   "dependencies": {
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -28,6 +33,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.0",
     "@types/node": "^22.9.0",
