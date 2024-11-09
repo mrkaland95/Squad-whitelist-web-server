@@ -7,4 +7,5 @@ RUN npm install
 RUN npm run build
 
 # ENTRYPOINT ["top", "-b"]
+EXPOSE 5000
 CMD ["node", "dist/index.js"]
