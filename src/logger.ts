@@ -25,7 +25,7 @@ export class Logger {
             if (this.timestampEnabled) {
                 msg += `[${Date.now()}]_`
             }
-            msg += `[${LoggingLevel[level]}]_${message}`
+            msg += `[${LoggingLevel[level]}]_[${message}]`
             console.log(msg)
         }
     }

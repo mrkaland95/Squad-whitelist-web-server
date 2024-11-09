@@ -20,7 +20,7 @@ async function main() {
     logger.log("Booting up whitelist management server...", LoggingLevel.INFO)
     await webServerStart()
     await mongoose.connect(env.mongoDBConnectionString)
-    await discordClient.login(env.discordAppToken)
+    // await discordClient.login(env.discordAppToken)
 }
 
 

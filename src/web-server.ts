@@ -49,7 +49,7 @@ async function webServerStart() {
     app.use(mainRoute)
     routes.forEach(route => {
         console.log('loading route: ', route)
-        // app.use(route)
+        app.use(route.name, route.router)
     })
     app.listen(env.webPort, () => {
         console.log('Web server up and running on port:', env.webPort)
