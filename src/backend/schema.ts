@@ -1,4 +1,3 @@
-// import * as mongoose from "mongoose";
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
 
@@ -56,14 +55,15 @@ export interface IDiscordUser extends Document {
 /**
  * Interface that describes a group of in-game permissions.
  */
-interface IAdminGroup extends Document {
+export interface IAdminGroup extends Document {
     GroupName: string,
     Permissions: [InGameAdminPermissions],
-    Enabled: boolean
+    Enabled: boolean,
+    IsWhitelistGroup: boolean
 }
 
 
-interface IRole extends Document {
+export interface IRole extends Document {
     RoleID: string,
     RoleName: string,
     AdminGroup?: IAdminGroup,
@@ -73,19 +73,19 @@ interface IRole extends Document {
 }
 
 
-interface ILog extends Document {
+export interface ILog extends Document {
     LogMessage: string,
     MessageType?: string,
 }
 
 
-interface IServerRole extends Document {
+export interface IDiscordRole extends Document {
     RoleID: string,
     RoleName: string,
     GuildID: string
 }
 
-interface IAPIKey extends Document {
+export interface IAPIKey extends Document {
     APIKey: string
 }
 
@@ -100,7 +100,8 @@ AdminGroups: The in game admin groups that a list will use.
 export interface IListEndpoint extends Document {
     ListName: string,
     AdminGroups: [IAdminGroup]
-    AllRolesEnabled: boolean
+    AllRolesEnabled: boolean,
+    UseWhitelistGroup: boolean
 }
 
 
@@ -111,7 +112,7 @@ Stores API keys that can be used to retrieve lists or exposed data if it's set t
 
  TODO add functionality for generating and automatically adding an API key.
  */
-export const apiSchema = new mongoose.Schema<IAPIKey>({
+const apiSchema = new mongoose.Schema<IAPIKey>({
     APIKey: { type: String, unique: true, required: true },
     }, {
     timestamps: true
@@ -122,7 +123,7 @@ export const apiSchema = new mongoose.Schema<IAPIKey>({
 /**
  *
  */
-export const discordUserSchema = new mongoose.Schema<IDiscordUser>({
+const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     DiscordID: { type: String, unique: true, required: true },
     DiscordName: { type: String, required: true },
     Roles: { type: [String], required: true },
@@ -139,17 +140,19 @@ export const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     }
 );
 
-export const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
+const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
     GroupName: { type: String, required: true, unique: true },
     Permissions: { type: [String], required: true, enum: Object.values(InGameAdminPermissions) },
     Enabled: { type: Boolean, required: true, default: true },
+    // I.e. all the user's whitelist slots will only get used for a list if it contains this group.
+    IsWhitelistGroup: { type: Boolean, required: true, default: false, unique: true }
     }, {
         timestamps: true
     }
 )
 
 
-export const inGameRoleSchema = new mongoose.Schema<IRole>({
+const inGameRoleSchema = new mongoose.Schema<IRole>({
     RoleID: { type: String, required: true, unique: true},
     RoleName: { type: String, required: true },
     AdminGroup: { type: adminGroupsSchema, required: false},
@@ -167,7 +170,7 @@ export const inGameRoleSchema = new mongoose.Schema<IRole>({
     }
 )
 
-export const allServerRolesSchema = new mongoose.Schema<IServerRole>({
+const allServerRolesSchema = new mongoose.Schema<IDiscordRole>({
     RoleID: { type: String, required: true, unique: true },
     RoleName: {type: String, required: true },
     GuildID: {type: String, required: true },
@@ -176,11 +179,11 @@ export const allServerRolesSchema = new mongoose.Schema<IServerRole>({
     }
 )
 
-export const listSchema = new mongoose.Schema<IListEndpoint>({
+const listSchema = new mongoose.Schema<IListEndpoint>({
     ListName: { type: String, required: true, unique: true },
     AdminGroups: { type: [adminGroupsSchema], required: true, default: [] },
     // I.e. if all users that has ANY role mapped to the admin group, should be enabled for this list.
-    AllRolesEnabled: { type: Boolean, required: true, default: true }
+    AllRolesEnabled: { type: Boolean, required: true, default: true },
     }, {
         timestamps: true
     }
