@@ -85,7 +85,7 @@ interface IServerRole extends Document {
     GuildID: string
 }
 
-interface IAPIKeys extends Document {
+interface IAPIKey extends Document {
     APIKey: string
 }
 
@@ -97,7 +97,7 @@ AdminGroups: The in game admin groups that a list will use.
 
 // TODO this may have to be expanded in the future.
  */
-interface IListEndpoints extends Document {
+export interface IListEndpoint extends Document {
     ListName: string,
     AdminGroups: [IAdminGroup]
     AllRolesEnabled: boolean
@@ -107,11 +107,11 @@ interface IListEndpoints extends Document {
 
 
 /**
-Stores API keys that can be used to retrieve lists or exposed data if it's set to a required parameter for a route.
+Stores API keys that can be used to retrieve lists or exposed data if it's set to a required parameter for a expressRoute.
 
  TODO add functionality for generating and automatically adding an API key.
  */
-export const apiSchema = new mongoose.Schema<IAPIKeys>({
+export const apiSchema = new mongoose.Schema<IAPIKey>({
     APIKey: { type: String, unique: true, required: true },
     }, {
     timestamps: true
@@ -176,7 +176,7 @@ export const allServerRolesSchema = new mongoose.Schema<IServerRole>({
     }
 )
 
-const listSchema = new mongoose.Schema<IListEndpoints>({
+export const listSchema = new mongoose.Schema<IListEndpoint>({
     ListName: { type: String, required: true, unique: true },
     AdminGroups: { type: [adminGroupsSchema], required: true, default: [] },
     // I.e. if all users that has ANY role mapped to the admin group, should be enabled for this list.

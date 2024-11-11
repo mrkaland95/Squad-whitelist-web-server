@@ -1,15 +1,13 @@
-import express, { Request, Response } from 'express';
+import express, {Request, Response} from 'express';
 import session from 'express-session'
-import cookieParser from 'cookie-parser'
 import env from './load-env'
-import { loadRoutes } from "./utils/utils";
+import {loadRoutes} from "./utils/utils";
 import path from "path";
-import mainRoute from "./routes/main";
+import mainRouter from "./routes/main";
 import MongoStore from "connect-mongo";
 import cors from 'cors';
+import {Logger, LoggingLevel} from "./logger";
 
-
-console.log(env.sessionSecret);
 
 const app = express()
 app.use(express.json())
@@ -40,19 +38,22 @@ app.use(cors({
 // app.use(sessionStorage)
 // app.use(cookieParser())
 
+// TODO add logging level from .env file
+const logger = new Logger()
 
 
 
 async function webServerStart() {
     const routesPath = path.join(__dirname, 'routes')
     const routes = await loadRoutes(routesPath)
-    app.use(mainRoute)
-    routes.forEach(route => {
-        console.log('loading route: ', route)
-        app.use(route.name, route.router)
-    })
+    app.use(mainRouter)
+    for (const route of routes) {
+        logger.debug(`Loading base route: ${route.name}`)
+        app.use(`/${route.name}`, route.router)
+    }
+
     app.listen(env.webPort, () => {
-        console.log('Web server up and running on port:', env.webPort)
+        logger.info(`Web server up and running on port: ${env.webPort}`)
     })
 }
 

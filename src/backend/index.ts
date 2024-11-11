@@ -17,7 +17,7 @@ const logger = new Logger(LoggingLevel.DEBUG)
 
 
 async function main() {
-    logger.log("Booting up whitelist management server...", LoggingLevel.INFO)
+    logger.info("Booting up whitelist management server...")
     await webServerStart()
     await mongoose.connect(env.mongoDBConnectionString)
     // await discordClient.login(env.discordAppToken)
