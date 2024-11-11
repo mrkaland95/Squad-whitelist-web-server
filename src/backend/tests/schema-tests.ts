@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-import {AdminGroupsDB, DiscordUsersDB, InGameAdminPermissions, ListsDB, RolesDB, WeekDays} from "../../src/backend/schema";
+import {AdminGroupsDB, DiscordUsersDB, InGameAdminPermissions, ListsDB, RolesDB, WeekDays} from "../schema";
 
 const connectionString = "mongodb://127.0.0.1:27017/whitelist-v2-throwaway"
 
@@ -10,9 +10,16 @@ const connectionString = "mongodb://127.0.0.1:27017/whitelist-v2-throwaway"
 
 async function main() {
     await mongoose.connect(connectionString)
-    const dummyUserID = `12345`
-    const dummyDiscordRoleID = '12345'
-    const dummyDiscordRoleID2 = '123457'
+
+
+
+    await DiscordUsersDB.deleteMany()
+    await ListsDB.deleteMany()
+    await AdminGroupsDB.deleteMany()
+    await RolesDB.deleteMany()
+
+
+    await initializeTestEntries()
 
     // await DiscordUsersDB.deleteMany()
     // await ListsDB.deleteMany()
@@ -20,14 +27,29 @@ async function main() {
     // await RolesDB.deleteMany()
 
 
+
+    process.exit()
+}
+
+
+async function initializeTestEntries() {
+    const dummyUserID = `12345`
+    const dummyDiscordRoleID = '12345'
+    const dummyDiscordRoleID2 = '123457'
+
+
     const testUser = await DiscordUsersDB.findOneAndUpdate({
         DiscordID: dummyUserID
     }, {
         DiscordID: dummyUserID,
         DiscordName: 'testuser',
-        Roles: [dummyDiscordRoleID],
-        Whitelist64IDs: [ {steamID: '12345', name: 'testname'} ],
-        Enabled: true
+        Roles: [dummyDiscordRoleID2, dummyDiscordRoleID],
+        Whitelist64IDs: [
+            { steamID: 'testid1', name: 'testname' },
+            { steamID: 'testid2', name: 'testname2' },
+        ],
+        Enabled: true,
+        AdminRole64ID: '7565test'
     }, {
         upsert: true, new: true, runValidators: true
     }).exec()
@@ -37,8 +59,24 @@ async function main() {
         GroupName: "Admins",
     }, {
         GroupName: "Admins",
-        Permissions: [InGameAdminPermissions.FEATURE_TEST, InGameAdminPermissions.CAN_SEE_ADMIN_CHAT],
+        Permissions: [
+            InGameAdminPermissions.FEATURE_TEST,
+            InGameAdminPermissions.CAN_SEE_ADMIN_CHAT,
+            InGameAdminPermissions.IMMUNE
+        ],
         Enabled: true
+    }, {
+        upsert: true, new: true, runValidators: true
+    }).exec()
+
+
+    const whitelistGroup = await AdminGroupsDB.findOneAndUpdate({
+        GroupName: "Whitelist",
+    }, {
+        GroupName: "Whitelist",
+        Permissions: [InGameAdminPermissions.RESERVE],
+        Enabled: true,
+        IsWhitelistGroup: true
     }, {
         upsert: true, new: true, runValidators: true
     }).exec()
@@ -50,6 +88,7 @@ async function main() {
         RoleID: dummyDiscordRoleID,
         RoleName: "TestRole",
         AdminGroup: testGroup,
+        WhitelistSlots: 5,
         ActiveDays: [WeekDays.Monday, WeekDays.Tuesday, WeekDays.Thursday],
         Enabled: true
     }, {
@@ -62,7 +101,8 @@ async function main() {
     }, {
         RoleID: dummyDiscordRoleID2,
         RoleName: "TestRole2",
-        ActiveDays: [WeekDays.Sunday, WeekDays.Wednesday, WeekDays.Friday],
+        AdminGroup: whitelistGroup,
+        ActiveDays: [WeekDays.Monday, WeekDays.Tuesday, WeekDays.Wednesday, WeekDays.Thursday, WeekDays.Friday, WeekDays.Saturday, WeekDays.Sunday],
         Enabled: true
     }, {
         upsert: true, new: true, runValidators: true
@@ -72,7 +112,7 @@ async function main() {
     const testList = await ListsDB.findOneAndUpdate({
         ListName: 'testlist'
     }, {
-        AdminGroups: [testGroup],
+        AdminGroups: [testGroup, whitelistGroup],
         AllRolesEnabled: false,
     }, {
         upsert: true, new: true, runValidators: true
@@ -80,23 +120,12 @@ async function main() {
 
 
     console.log("Test Group: ", testGroup);
+    console.log("Whitelist Group: ", whitelistGroup);
     console.log("Test User: ", testUser)
     console.log("Test Role: ", testRole)
     console.log("Test Role2: ", testRole2)
     console.log("Test List: ", testList)
 
-    if (testList) {
-        console.log(testList.AdminGroups);
-    }
-
-    // await DiscordUsersDB.deleteMany()
-    // await ListsDB.deleteMany()
-    // await AdminGroupsDB.deleteMany()
-    // await RolesDB.deleteMany()
-
-
-
-    process.exit()
 }
 
 

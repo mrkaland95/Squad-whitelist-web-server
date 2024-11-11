@@ -1,14 +1,5 @@
-import {
-    AdminGroupsDB,
-    DiscordUsersDB,
-    IAdminGroup,
-    IDiscordUser,
-    IListEndpoint,
-    IRole,
-    ListsDB,
-    RolesDB
-} from "./schema";
-import { Client, GatewayIntentBits } from "discord.js";
+import {DiscordUsersDB, IAdminGroup, IDiscordUser, IListEndpoint, IRole, ListsDB, RolesDB} from "./schema";
+import {Client, GatewayIntentBits} from "discord.js";
 
 /*
 File responsible for handling caches of data, and initializing the discord and database clients.
@@ -55,8 +46,6 @@ async function refreshLists() {
 }
 
 
-
-
 export async function generateLists(listsData: IListEndpoint[], rolesData: IRole[], usersData: IDiscordUser[]) {
     for (const lData of listsData) {
         const listFile = await constructListFile(lData, rolesData, usersData)
@@ -65,58 +54,100 @@ export async function generateLists(listsData: IListEndpoint[], rolesData: IRole
     }
 }
 
+
 async function constructListFile(listData: IListEndpoint, rolesData: IRole[], usersData: IDiscordUser[]) {
     let fBuffer: string[] = []
     let whitelistGroup: IAdminGroup | null = null
+    let enabledAdminGroups: IAdminGroup[] = []
+    let validDiscordRoles: IRole[] = []
     for (const group of listData.AdminGroups) {
         if (!group.Enabled) continue
         if (!group.Permissions.length) continue
+
         if (group.IsWhitelistGroup) {
             whitelistGroup = group
         }
 
         let permissions = group.Permissions.join(",")
         fBuffer.push(`Group=${group.GroupName}:${permissions}`)
+
+        for (const role of rolesData) {
+            if (role?.AdminGroup?.GroupName === group.GroupName) {
+                validDiscordRoles.push(role)
+            }
+        }
+
+        enabledAdminGroups.push(group)
     }
 
+
+    // TODO change this into using a timezone defined by either the .env or user specifiable timezone.
     // Equivalent to EST time, but need to add timezones to the config file.
     let today = new Date(Date.now() - (60 * 60 - 1000 * 4))
 
 
     // TODO this almost certainly requires optimization.
     for (let user of usersData) {
-
-
-
-
         if (!user.Whitelist64IDs) {
             user.Whitelist64IDs = []
         }
 
+        const usersValidRoles = getValidUserRoles(user, validDiscordRoles)
+        // console.log('User', user.DiscordName, 'valid roles: ', usersValidRoles)
 
-        if (!whitelistGroup) {
-            continue
-            // TODO may have to find a better solution for active days, but currently it will just be the active days of their highest role.
-            // My current idea is to perhaps have "significance" levels to the admin groups, where your highest one decides your in-game permissions, active days etc.
+        /*
+        TODO
+        Add "admin" role of user.
+        Currently this solution is rather flawed, as it allows a user have multiple in game admin groups, which can cause issues.
+        My current idea is to perhaps have "significance" levels to the admin groups, where your highest one decides your in-game permissions, active days etc.
+
+         */
+        if (user.AdminRole64ID) {
+            for (const role of usersValidRoles) {
+                if (role?.AdminGroup?.IsWhitelistGroup === false) {
+                    fBuffer.push(`Admin=${user.AdminRole64ID}:${role.AdminGroup.GroupName} // ${user.DiscordName}`)
+                }
+            }
         }
 
-        let whitelistProps: IUserProps = processUserRoles(user, rolesData)
+        let whitelistProps: IUserProps = processUserRoles(user, validDiscordRoles)
+
+        // TODO may have to find a better solution for active days, but currently it will just be the active days of their highest role.
+        if (!whitelistGroup) {
+            console.log('List doesent have whitelist group')
+            continue
+        }
+
         if (whitelistProps.WhitelistActiveDays.includes(today.getDay())) {
-            console.log('Is active day')
-            for (let i = 0; i < whitelistProps.WhitelistSlots; ) {
+            for (let i = 0; i < whitelistProps.WhitelistSlots; i++) {
                 let id = user.Whitelist64IDs[i]?.steamID
-                console.log(id)
                 if (id) {
                     fBuffer.push(`Admin=${id}:${whitelistGroup.GroupName} // Originator: ${user.DiscordName}`)
                 }
             }
         }
-
     }
-
 
     return fBuffer.join('\r\n')
 }
+
+
+/**
+ * Filters out the roles that a user has that are valid for a specific list.
+ * @param user {IDiscordUser}
+ * @param validListRoles {IRole[]}
+ */
+function getValidUserRoles(user: IDiscordUser, validListRoles: IRole[]) {
+    return validListRoles.filter(role => {
+        return user.Roles.includes(role.RoleID)
+    })
+}
+
+
+
+function generateAdminPermissionString(user: IDiscordUser)
+
+
 
 function processUserRoles(user: IDiscordUser, discordRoles: IRole[]) {
     let userProps: IUserProps = { WhitelistSlots: 0, WhitelistActiveDays: []}
