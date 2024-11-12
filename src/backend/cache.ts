@@ -22,6 +22,11 @@ export const discordClient = new Client({
     ]
 })
 
+
+/**
+ * Refreshes the local cache with all discord users stored in the DB.
+ * Returns a pointer to the users cache after the refresh has been performed.
+ */
 export async function refreshUsersCache() {
     const discordUsers = await DiscordUsersDB.find()
     usersCache.clear()
@@ -29,15 +34,6 @@ export async function refreshUsersCache() {
         usersCache.set(user.DiscordID, user)
     }
     return usersCache
-}
-
-export async function getActiveUsersFromCache() {
-    const activeUsers = usersCache.values()
-    console.log(usersCache)
-    // console.log(activeUsers)
-
-
-
 }
 
 
@@ -55,8 +51,15 @@ export async function generateLists(listsData: IListEndpoint[], rolesData: IPriv
 /**
  * Dynamically generates a permission list based on admingroups assigned to a specific list and discord roles.
  *
+ * An admin group is a name mapped to a set of in-game permissions,
+ * So for example you could have an admin group with name "Whitelist", with an array of permissions ["reserve"]
+ * Which would give ever user with that permission whitelist/priority queue to the game server.
+ *
  * For example, if a list has admin group "X" assigned to it, then all users with a discord role that also has admin group "X"
  * assigned to it, will get their adminID added to the list endpoint, provided they have an adminID installed.
+
+ * Additionally, if the list endpoint has the admin grouped marked with the "isWhitelistGroup" flag,
+ * Then all users with roles that has whitelist slots will have their white
  *
  *
  * @param listData {IListEndpoint}
@@ -87,7 +90,7 @@ async function constructListFile(listData: IListEndpoint, rolesData: IPrivileged
 
 
     // TODO change this into using a timezone defined by either the .env or user specifiable timezone.
-    // Equivalent to EST time, but need to add timezones to the config file.
+    // Equivalent to EST time, but need to add customizable timezones to the config file.
     let today = new Date(Date.now() - (60 * 60 - 1000 * 4))
 
 
@@ -234,7 +237,6 @@ export async function refreshDiscordUsersAndRoles(disableUsersNoLongerInGuild: b
         }).exec()
     }
 
-
     if (disableUsersNoLongerInGuild) {
         // Find the users that are currently enabled, but shouldn't be.
         let usersToScrub = await DiscordUsersDB.find({DiscordID: {$nin: enabledUsersIDs}, Enabled: true})
@@ -254,8 +256,13 @@ export async function refreshDiscordUsersAndRoles(disableUsersNoLongerInGuild: b
 }
 
 
+/**
+ * Utility function for retrieving all enabled/active users that has a special/privileged role.
+ * A privileged/special role in the context of this project is any role that has an admin group mapped to it.
+ */
 export async function getAllUsersWithSpecialRoles() {
     let privilegedRoles = await RolesDB.find({Enabled: true})
+    // A role is considered privileged/special if it has an admin group.
     privilegedRoles = privilegedRoles.filter(role => role?.AdminGroup)
 
     const specialUsers: IDiscordUser[] = []
@@ -273,8 +280,6 @@ export async function getAllUsersWithSpecialRoles() {
 
     return specialUsers
 }
-
-
 
 
 /**
