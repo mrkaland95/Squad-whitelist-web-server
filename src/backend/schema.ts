@@ -63,7 +63,7 @@ export interface IAdminGroup extends Document {
 }
 
 
-export interface IRole extends Document {
+export interface IPrivilegedRole extends Document {
     RoleID: string,
     RoleName: string,
     AdminGroup?: IAdminGroup,
@@ -94,17 +94,15 @@ export interface IAPIKey extends Document {
 ListName: Represents the name of an endpoint to retrieve a last, i.e. /lists/:ListName
 AdminGroups: The in game admin groups that a list will use.
 
-
 // TODO this may have to be expanded in the future.
  */
 export interface IListEndpoint extends Document {
     ListName: string,
-    AdminGroups: [IAdminGroup]
+    AdminGroups: [IAdminGroup],
     AllRolesEnabled: boolean,
-    UseWhitelistGroup: boolean
+    UseWhitelistGroup: boolean,
+    Enabled: boolean
 }
-
-
 
 
 /**
@@ -113,7 +111,7 @@ Stores API keys that can be used to retrieve lists or exposed data if it's set t
  TODO add functionality for generating and automatically adding an API key.
  */
 const apiSchema = new mongoose.Schema<IAPIKey>({
-    APIKey: { type: String, unique: true, required: true },
+    APIKey: { type: String, required: true, unique: true }
     }, {
     timestamps: true
     }
@@ -125,6 +123,7 @@ const apiSchema = new mongoose.Schema<IAPIKey>({
  */
 const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     DiscordID: { type: String, unique: true, required: true },
+    // TODO add a separate field for globalname.
     DiscordName: { type: String, required: true },
     Roles: { type: [String], required: true },
     Whitelist64IDs: [
@@ -152,7 +151,7 @@ const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
 )
 
 
-const inGameRoleSchema = new mongoose.Schema<IRole>({
+const inGameRoleSchema = new mongoose.Schema<IPrivilegedRole>({
     RoleID: { type: String, required: true, unique: true},
     RoleName: { type: String, required: true },
     AdminGroup: { type: adminGroupsSchema, required: false},
@@ -184,6 +183,7 @@ const listSchema = new mongoose.Schema<IListEndpoint>({
     AdminGroups: { type: [adminGroupsSchema], required: true, default: [] },
     // I.e. if all users that has ANY role mapped to the admin group, should be enabled for this list.
     AllRolesEnabled: { type: Boolean, required: true, default: true },
+    Enabled: { type: Boolean, required: true, default: true }
     }, {
         timestamps: true
     }

@@ -1,5 +1,7 @@
-import {DiscordUsersDB, IAdminGroup, IDiscordUser, IListEndpoint, IRole, ListsDB, RolesDB} from "./schema";
-import {Client, GatewayIntentBits} from "discord.js";
+import {DiscordUsersDB, IAdminGroup, IDiscordUser, IListEndpoint, IPrivilegedRole, ListsDB, RolesDB} from "./schema";
+import {Client, GatewayIntentBits, GuildMember} from "discord.js";
+import {Logger, LoggingLevel} from "./logger";
+import env from "./load-env";
 
 /*
 File responsible for handling caches of data, and initializing the discord and database clients.
@@ -7,8 +9,10 @@ TODO might want to factor out the initialization of discord and db to somewhere 
  */
 
 
-const usersCache: Map<string, IDiscordUser> = new Map()
-const listsCache: Map<string, string> = new Map()
+const logger = new Logger(LoggingLevel.DEBUG)
+
+let usersCache: Map<string, IDiscordUser> = new Map()
+let listsCache: Map<string, string> = new Map()
 
 
 export const discordClient = new Client({
@@ -27,39 +31,42 @@ export async function refreshUsersCache() {
     return usersCache
 }
 
+export async function getActiveUsersFromCache() {
+    const activeUsers = usersCache.values()
+    console.log(usersCache)
+    // console.log(activeUsers)
 
-// Meant to be a rough analogue of the "performScrub" function of the old whitelist server.
-export async function refreshDiscordUsersAndRoles() {
+
 
 }
 
-// TODO generate and store the lists here in caches.
 
-async function refreshLists() {
-    // TODO use the caches instead here.
-    const users = await DiscordUsersDB.find()
-    const listsData = await ListsDB.find({
-        // Enabled: true
-    })
-    const discordRoles = await RolesDB.find()
-    const listsMapping = await generateLists(listsData, discordRoles, users)
-}
+export async function generateLists(listsData: IListEndpoint[], rolesData: IPrivilegedRole[], usersData: IDiscordUser[]) {
+    const listsMap = new Map<string, string>()
 
-
-export async function generateLists(listsData: IListEndpoint[], rolesData: IRole[], usersData: IDiscordUser[]) {
     for (const lData of listsData) {
         const listFile = await constructListFile(lData, rolesData, usersData)
-        console.log(listFile)
-        listsCache.set(lData.ListName, listFile)
+        listsMap.set(lData.ListName, listFile)
     }
+    return listsMap
 }
 
 
-async function constructListFile(listData: IListEndpoint, rolesData: IRole[], usersData: IDiscordUser[]) {
+/**
+ * Dynamically generates a permission list based on admingroups assigned to a specific list and discord roles.
+ *
+ * For example, if a list has admin group "X" assigned to it, then all users with a discord role that also has admin group "X"
+ * assigned to it, will get their adminID added to the list endpoint, provided they have an adminID installed.
+ *
+ *
+ * @param listData {IListEndpoint}
+ * @param rolesData {IPrivilegedRole[]}
+ * @param usersData {IDiscordUser[]}
+ */
+async function constructListFile(listData: IListEndpoint, rolesData: IPrivilegedRole[], usersData: IDiscordUser[]) {
     let fBuffer: string[] = []
     let whitelistGroup: IAdminGroup | null = null
-    let enabledAdminGroups: IAdminGroup[] = []
-    let validDiscordRoles: IRole[] = []
+    let validDiscordRoles: IPrivilegedRole[] = []
     for (const group of listData.AdminGroups) {
         if (!group.Enabled) continue
         if (!group.Permissions.length) continue
@@ -68,16 +75,14 @@ async function constructListFile(listData: IListEndpoint, rolesData: IRole[], us
             whitelistGroup = group
         }
 
-        let permissions = group.Permissions.join(",")
-        fBuffer.push(`Group=${group.GroupName}:${permissions}`)
-
         for (const role of rolesData) {
             if (role?.AdminGroup?.GroupName === group.GroupName) {
                 validDiscordRoles.push(role)
             }
         }
 
-        enabledAdminGroups.push(group)
+        let permissions = group.Permissions.join(",")
+        fBuffer.push(`Group=${group.GroupName}:${permissions}`)
     }
 
 
@@ -92,7 +97,7 @@ async function constructListFile(listData: IListEndpoint, rolesData: IRole[], us
             user.Whitelist64IDs = []
         }
 
-        const usersValidRoles = getValidUserRoles(user, validDiscordRoles)
+        const usersValidRoles = getUsersValidRoles(user, validDiscordRoles)
         // console.log('User', user.DiscordName, 'valid roles: ', usersValidRoles)
 
         /*
@@ -104,17 +109,17 @@ async function constructListFile(listData: IListEndpoint, rolesData: IRole[], us
          */
         if (user.AdminRole64ID) {
             for (const role of usersValidRoles) {
+                // We explicitly check against false, because we don't want to add the user if the "admingroup" is undefined.
                 if (role?.AdminGroup?.IsWhitelistGroup === false) {
                     fBuffer.push(`Admin=${user.AdminRole64ID}:${role.AdminGroup.GroupName} // ${user.DiscordName}`)
                 }
             }
         }
 
-        let whitelistProps: IUserProps = processUserRoles(user, validDiscordRoles)
+        let whitelistProps: IUserProps = processWhitelistProps(user, validDiscordRoles)
 
         // TODO may have to find a better solution for active days, but currently it will just be the active days of their highest role.
         if (!whitelistGroup) {
-            console.log('List doesent have whitelist group')
             continue
         }
 
@@ -133,23 +138,171 @@ async function constructListFile(listData: IListEndpoint, rolesData: IRole[], us
 
 
 /**
+ * Generates new list endpoints based on the documents stored in the database,
+ */
+export async function refreshListCache() {
+    // TODO use the caches instead here.
+    logger.debug('Refreshing lists endpoint cache...')
+
+    // TODO swap to using cache.
+    const usersData = await DiscordUsersDB.find()
+    const listsData = await ListsDB.find({
+        Enabled: true,
+    })
+
+    const discordRolesData = await RolesDB.find()
+    listsCache = await generateLists(listsData, discordRolesData, usersData)
+}
+
+
+export async function getUsersFromCache(activeUsersOnly: boolean = true): Promise<Map<string, IDiscordUser>> {
+    const usersValues = usersCache.values()
+    let users: IDiscordUser[] = []
+
+    if (activeUsersOnly) {
+        users = Array.from(usersValues).filter(user => user.Enabled)
+    } else {
+        users = Array.from(usersValues)
+    }
+
+    return users
+}
+
+
+
+export function getListsCache() {
+    return listsCache
+}
+
+
+/**
+ * Retrieves all discord members from all servers the bot has access to.
+ */
+async function retrieveAllDiscordMembers() {
+    let allDiscordMembers: GuildMember[] = []
+    try {
+        for (let guild of discordClient.guilds.cache.values()) {
+            const members = await guild.members.fetch()
+            allDiscordMembers.push(...members.values())
+        }
+    } catch (e) {
+        logger.error(`Discord client was unable to retrieve guilds.`)
+    }
+
+    return allDiscordMembers
+}
+
+/**
+ * Retrieves all members from a specific guild.
+ * @param guildID {string}
+ * @return discordMembers {GuildMember[]}
+ */
+async function retrieveMembersFromGuild(guildID: string) {
+    let discordMembers: GuildMember[] = []
+
+    try {
+        let guild = discordClient.guilds.cache.get(guildID)
+        const members = await guild?.members.fetch()
+        if (members) {
+            discordMembers.push(...members.values());
+        }
+
+    } catch (e) {
+        logger.error(`Discord client was unable to retrieve members from guild ${guildID}`)
+    }
+
+    return discordMembers
+}
+
+
+// Meant to be a rough analogue of the "performScrub" function of the old whitelist server.
+export async function refreshDiscordUsersAndRoles(disableUsersNoLongerInGuild: boolean = true) {
+    logger.debug('Performing scrub of users...')
+    const members = await retrieveMembersFromGuild(env.discordGuildID)
+    const enabledUsersIDs: string[] = []
+    for (const member of members) {
+        const memberRoles = member.roles.cache.map(role => role.id)
+        const name = member.user.displayName ? member.user.displayName : member.user.username
+        enabledUsersIDs.push(member.id)
+
+        const newUser = await DiscordUsersDB.findOneAndUpdate({
+            DiscordID: member.id
+        }, {
+            DiscordID: member.id, DiscordName: name, Roles: memberRoles, Enabled: true
+        }, {
+            upsert: true, runValidators: true
+        }).exec()
+    }
+
+
+    if (disableUsersNoLongerInGuild) {
+        // Find the users that are currently enabled, but shouldn't be.
+        let usersToScrub = await DiscordUsersDB.find({DiscordID: {$nin: enabledUsersIDs}, Enabled: true})
+        // Disables inactive users.
+        for (const user of usersToScrub) {
+            await DiscordUsersDB.findOneAndUpdate({
+                DiscordID: user.DiscordID
+            }, {
+                Enabled: false
+            }).exec()
+        }
+
+        if (usersToScrub.length) {
+           logger.debug(`Scrubbed users: ${usersToScrub.length}`)
+        }
+    }
+}
+
+
+export async function getAllUsersWithSpecialRoles() {
+    let privilegedRoles = await RolesDB.find({Enabled: true})
+    privilegedRoles = privilegedRoles.filter(role => role?.AdminGroup)
+
+    const specialUsers: IDiscordUser[] = []
+    for (const user of usersCache.values()) {
+        if (!user.Enabled) continue
+
+        let hasValidRole = privilegedRoles.some(role => {
+            return user.Roles.includes(role.RoleID);
+        })
+
+        if (hasValidRole) {
+            specialUsers.push(user)
+        }
+    }
+
+    return specialUsers
+}
+
+
+
+
+/**
  * Filters out the roles that a user has that are valid for a specific list.
  * @param user {IDiscordUser}
- * @param validListRoles {IRole[]}
+ * @param allValidRoles {IPrivilegedRole[]}
+ * @return {IPrivilegedRole[]}
  */
-function getValidUserRoles(user: IDiscordUser, validListRoles: IRole[]) {
-    return validListRoles.filter(role => {
+function getUsersValidRoles(user: IDiscordUser, allValidRoles: IPrivilegedRole[]) {
+    return allValidRoles.filter(role => {
         return user.Roles.includes(role.RoleID)
     })
 }
 
 
 
-function generateAdminPermissionString(user: IDiscordUser)
+function generateAdminPermissionString(user: IDiscordUser) {
+
+}
 
 
-
-function processUserRoles(user: IDiscordUser, discordRoles: IRole[]) {
+/**
+ * Utility function to process how many slots whitelist slots and active days a user will have.
+ *
+ * @param user
+ * @param discordRoles
+ */
+function processWhitelistProps(user: IDiscordUser, discordRoles: IPrivilegedRole[]) {
     let userProps: IUserProps = { WhitelistSlots: 0, WhitelistActiveDays: []}
 
     for (const userRoleID of user.Roles) {
@@ -182,6 +335,4 @@ interface IUserProps {
     // TODO add "admin" or singificance number here.
 }
 
-
-refreshLists()
 

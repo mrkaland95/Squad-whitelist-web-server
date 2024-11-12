@@ -5,8 +5,6 @@ type EnvField = {
 }
 
 
-
-
 const requiredFields: EnvField[] = [
     { field: process.env.SESSION_SECRET, errorMsg: 'Session secret is required for the web server to run.' },
     { field: process.env.MONGO_DB_CONNECTION_STRING, errorMsg: 'A mongoDB connection string is required.'},
@@ -26,6 +24,7 @@ const mongoDBConnectionString = String(process.env.MONGO_DB_CONNECTION_STRING)
 const sessionSecret = String(process.env.SESSION_SECRET)
 const webPort = Number(process.env.PORT) || 5000
 const cookieMaxAgeHours = Number(process.env.COOKIE_MAX_AGE_HOURS) || 0.5
+const discordGuildID = String(process.env.DISCORD_GUILD_ID)
 const discordLoggingEnabled = Boolean(process.env.DISCORD_LOGGING_ENABLED) || false
 const discordLoggingChannel = String(process.env.DISCORD_LOGGING_CHANNEL)
 const discordOath2ClientPublic = String(process.env.DISCORD_OAUTH_CLIENT_PUBLIC)
@@ -40,6 +39,7 @@ export default {
     webPort,
     cookieMaxAgeHours,
     discordLoggingChannel,
+    discordGuildID,
     sessionSecret,
     mongoDBConnectionString,
     discordAppToken,
