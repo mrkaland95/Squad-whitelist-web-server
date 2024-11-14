@@ -110,7 +110,7 @@ Stores API keys that can be used to retrieve lists or exposed data if it's set t
 
  TODO add functionality for generating and automatically adding an API key.
  */
-const apiSchema = new mongoose.Schema<IAPIKey>({
+const apiSchema = new mongoose.Schema({
     APIKey: { type: String, required: true, unique: true }
     }, {
     timestamps: true
@@ -132,7 +132,13 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
             name: { type: String, required: false },
         },
     ],
+
+    // Change this into an object that stores the steamID and whether the steamID was retrieved by steam authentication directly.
     AdminRole64ID: { type: String, required: false },
+    // AdminRole64ID:  {
+    //     steamID: {type: String, required: false },
+    //     isLinkedToSteam: {type: Boolean, required: false }
+    // },
     Enabled: { type: Boolean, required: true },
     }, {
         timestamps: true

@@ -21,12 +21,10 @@ router.get('/:list', async (req, res) => {
                 }
             })
         }
-
     } catch (e) {
         console.log('Internal server error', e)
         res.status(500).send('Internal server error')
     }
-
 })
 
 

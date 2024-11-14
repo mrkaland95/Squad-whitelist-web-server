@@ -3,6 +3,7 @@ import path from "path";
 import {ExpressRoute} from "./types";
 import {pseudoRandomBytes} from "crypto";
 import * as readline from "readline";
+import {Router} from "express";
 
 
 /**
@@ -24,7 +25,7 @@ export async function loadRoutes(routesPath: string) {
         const filePath = path.join(file.path, file.name)
         const route = require(filePath)?.default
         // TODO add check for actual content of expressRoute here.
-        if (route) {
+        if (route?.router && route?.name) {
             routes.push(route)
         }
     }

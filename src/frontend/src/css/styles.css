@@ -4,7 +4,7 @@
    form {
        text-align: center;
    }
-    .body {
+    .content-body {
         /*//*/
         /*background-color: rgba(9, 7, 7, 0.93);*/
         background-color: #0F1214;
@@ -289,7 +289,7 @@
     }
 
 
-    .defaultButton {
+    .default-button {
         border-radius: 5px;
         border: 1px solid white;
         padding: 12px 30px;
@@ -301,7 +301,7 @@
         background: transparent;
         transition: border .3s,color .3s;
     }
-    .defaultButton:hover, .defaultButton:focus {
+    .default-button:hover, .default-button:focus {
       background-color: #1c618f;
     }
 

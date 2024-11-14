@@ -129,4 +129,30 @@ async function initializeTestEntries() {
 }
 
 
-main()
+async function initiateRealRoles() {
+    await mongoose.connect(connectionString)
+    const generalRoleID = "757561984374931466"
+    const name = "General"
+
+    const adminGroup = await AdminGroupsDB.find()[0]
+
+    const result = await RolesDB.findOneAndUpdate({
+        RoleID: generalRoleID
+    }, {
+        RoleID: generalRoleID,
+        RoleName: name,
+        AdminGroup: adminGroup,
+        ActiveDays: [0, 1, 2, 3, 4, 5, 6],
+        WhitelistSlots: 5,
+        Enabled: true
+    }, {
+        new: true, upsert: true, runValidators: true
+    }).exec()
+    process.exit()
+}
+
+
+initiateRealRoles()
+
+
+// main()

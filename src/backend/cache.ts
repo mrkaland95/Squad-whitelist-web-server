@@ -158,14 +158,30 @@ export async function refreshListCache() {
 }
 
 
-export async function getUsersFromCache(activeUsersOnly: boolean = true): Promise<Map<string, IDiscordUser>> {
+export function getUsersFromCache(activeUsersOnly: boolean = true): IDiscordUser[] {
     const usersValues = usersCache.values()
-    let users: IDiscordUser[] = []
+    let users: IDiscordUser[]
 
     if (activeUsersOnly) {
         users = Array.from(usersValues).filter(user => user.Enabled)
     } else {
         users = Array.from(usersValues)
+    }
+
+    return users
+}
+
+export function GetUsersFromCacheMap(activeUsers: boolean = true) {
+    let users: Map<string, IDiscordUser> = new Map()
+
+    if (activeUsers) {
+        usersCache.forEach(user => {
+            if (user.Enabled) {
+                users.set(user.DiscordID, user)
+            }
+        })
+    } else {
+        users = usersCache
     }
 
     return users

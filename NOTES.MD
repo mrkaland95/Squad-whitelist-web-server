@@ -10,3 +10,5 @@ Potential solution here:
 
 
 May have to keep a "permanent" whitelist group that can't be deleted from the database.
+
+Add some sort of tier/level system to the admin groups, so certain ones can be considered more "senior" than the others, which will then be counted
