@@ -1,6 +1,4 @@
-import '../css/Temp.css'
-
-
+import '../css/App.css'
 
 
 function Navbar() {
