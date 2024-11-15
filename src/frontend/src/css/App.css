@@ -10,7 +10,72 @@
 .body {
   min-height: 100vh;
   display: flex;
+}
 
+
+.content {
+  display: flex;
+  justify-content: center;
+  margin-inline: auto;
+  padding-inline: 2rem;
+  /*align-items: center;*/
+  min-height: 100vh;
+  min-width: 80vw;
+
+
+  /*  margin: 0;*/
+  /*  flex: 1;*/
+  /*padding: 20px;*/
+}
+
+.nav-container {
+    background-color: #0d0f11;
+    color: white;
+    justify-content: space-between;
+    width: 100%;
+    gap: 2rem;
+    padding: 0 1rem;
+  border-bottom: 0.1rem solid #0d0f11;
+  border-radius: 0.2rem;
+}
+
+.nav-container ul {
+
+}
+
+.sidebar-div {
+    /* TODO adjust width to be more dynamic, IDK i don't know CSS well.*/
+    width: 200px;
+    background-color: #000000;
+  border-right: 1px solid #070404;
+  /*border: #466d95;*/
+  /*border-spacing: 10px;*/
+
+  /*border*/
+    color: white;
+    padding: 0.2rem;
+}
+
+.sidebar-div ul {
+    list-style-type: none;
+}
+.sidebar-div ul li {
+    padding: 8px 0;
+}
+
+.home-container {
+  margin: auto;
+  max-width: 500px;
+
+  /*padding-bottom: 2rem;*/
+}
+
+.home-container button {
+  align-self: center;
+}
+
+.button-div {
+  margin: auto;
 }
 
 .default-button {
@@ -26,46 +91,6 @@
     transition: border .3s,color .3s;
 }
 .default-button:hover, .default-button:focus {
-  background-color: #1c618f;
+    background-color: #1c618f;
 }
-
-.content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin-left: 250px;
-  /*  margin: 0;*/
-  /*  flex: 1;*/
-  /*padding: 20px;*/
-}
-
-.nav {
-    background-color: #0d0f11;
-    color: white;
-    justify-content: space-between;
-    width: 100%;
-    gap: 2rem;
-    padding: 0 1rem;
-}
-
-.nav ul {
-
-}
-
-.sidebar-div {
-    /* TODO adjust width to be more dynamic, IDK i don't know CSS well.*/
-    width: 200px;
-    background-color: #000000;
-    color: white;
-    padding: 0.2rem;
-}
-
-.sidebar-div ul {
-    list-style-type: none;
-}
-.sidebar-div ul li {
-    padding: 8px 0;
-}
-
 

@@ -4,6 +4,11 @@ import '../css/App.css';
 import DiscordAuthentication from "./Login";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import Home from "./Home";
+import {Route, Routes} from "react-router-dom";
+import Profile from "./not-implemented/Profile";
+import Admin from "./not-implemented/Admin";
+import Whitelist from "./not-implemented/Whitelist";
 
 function App() {
   return (
@@ -12,10 +17,12 @@ function App() {
         <div className="body">
             <Sidebar></Sidebar>
             <div className="content">
-                <p>
-                Squad Whitelist Management page
-                </p>
-                <DiscordAuthentication></DiscordAuthentication>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/user" element={<Admin />} />
+                    <Route path="/whitelist" element={<Whitelist />} />
+                </Routes>
             </div>
         </div>
     </div>

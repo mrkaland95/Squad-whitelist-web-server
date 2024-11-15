@@ -4,12 +4,17 @@
 function Sidebar() {
     return (
         <div className={"sidebar-div"}>
-            <h2>Sidebar Placeholder</h2>
+            <h2>Options</h2>
             <ul>
-                <li>Test</li>
-                <li>Test2</li>
-                <li>Test3</li>
-                <li>Test4</li>
+                <li>
+                    <a href={"/profile"}>Profile</a>
+                </li>
+                <li>
+                    <a href={"/user"}>User</a>
+                </li>
+                <li>
+                    <a href={"/whitelist"}>Whitelist</a>
+                </li>
             </ul>
         </div>
     )

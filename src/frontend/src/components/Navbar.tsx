@@ -2,7 +2,7 @@ import '../css/App.css'
 
 
 function Navbar() {
-    return (<nav className="nav">
+    return (<nav className="nav-container">
         <a href="/" className="site-title">
             Test Name
         </a>
