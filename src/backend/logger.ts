@@ -22,35 +22,35 @@ export class Logger {
         this.timestampEnabled = timestampEnabled
     }
 
-    debug(...message: string[]) {
+    debug(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.DEBUG) {
             const output = this.constructMsg(LoggingLevel.DEBUG)
             console.log(output, ...message)
         }
     }
 
-    info(...message: string[]) {
+    info(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.INFO) {
             const output = this.constructMsg(LoggingLevel.INFO)
             console.log(output, ...message)
         }
     }
 
-    warning(...message: string[]) {
+    warning(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.WARNING) {
             const output = this.constructMsg(LoggingLevel.WARNING)
             console.warn(output, message)
         }
     }
 
-    critical(...message: string[]) {
+    critical(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.CRITICAL) {
             const output = this.constructMsg(LoggingLevel.CRITICAL)
             console.warn(output, message)
         }
     }
 
-    error(...message: string[]) {
+    error(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.ERROR) {
             const output = this.constructMsg(LoggingLevel.CRITICAL)
             console.error(output, message)
