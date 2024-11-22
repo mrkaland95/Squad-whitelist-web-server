@@ -49,7 +49,7 @@ async function initializeTestEntries() {
             { steamID: 'testid2', name: 'testname2' },
         ],
         Enabled: true,
-        AdminRole64ID: '7565test'
+        UserID64: { steamID: '75343'}
     }, {
         upsert: true, new: true, runValidators: true
     }).exec()
@@ -134,6 +134,7 @@ async function initiateRealRoles() {
     const generalRoleID = "757561984374931466"
     const name = "General"
 
+    // @ts-ignore
     const adminGroup = await AdminGroupsDB.find()[0]
 
     const result = await RolesDB.findOneAndUpdate({

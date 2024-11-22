@@ -110,11 +110,11 @@ async function constructListFile(listData: IListEndpoint, rolesData: IPrivileged
         My current idea is to perhaps have "significance" levels to the admin groups, where your highest one decides your in-game permissions, active days etc.
 
          */
-        if (user.AdminRole64ID) {
+        if (user.UserID64?.steamID) {
             for (const role of usersValidRoles) {
                 // We explicitly check against false, because we don't want to add the user if the "admingroup" is undefined.
                 if (role?.AdminGroup?.IsWhitelistGroup === false) {
-                    fBuffer.push(`Admin=${user.AdminRole64ID}:${role.AdminGroup.GroupName} // ${user.DiscordName}`)
+                    fBuffer.push(`Admin=${user.UserID64.steamID}:${role.AdminGroup.GroupName} // ${user.DiscordName}`)
                 }
             }
         }
@@ -323,7 +323,7 @@ function generateAdminPermissionString(user: IDiscordUser) {
  * @param user
  * @param discordRoles
  */
-function processWhitelistProps(user: IDiscordUser, discordRoles: IPrivilegedRole[]) {
+export function processWhitelistProps(user: IDiscordUser, discordRoles: IPrivilegedRole[]) {
     let userProps: IUserProps = { WhitelistSlots: 0, WhitelistActiveDays: []}
 
     for (const userRoleID of user.Roles) {

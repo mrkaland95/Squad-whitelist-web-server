@@ -48,7 +48,7 @@ export interface IDiscordUser extends Document {
     DiscordName: string;
     Roles: string[];
     Whitelist64IDs: { steamID: string; name?: string }[];
-    AdminRole64ID?: string;
+    UserID64?: { steamID: string; isLinkedToSteam: boolean};
     Enabled: boolean;
 }
 
@@ -134,7 +134,10 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     ],
 
     // Change this into an object that stores the steamID and whether the steamID was retrieved by steam authentication directly.
-    AdminRole64ID: { type: String, required: false },
+    UserID64: {
+        steamID: {type: String, required: true},
+        isLinkedToSteam: {type: Boolean, required: false, default: false }
+    },
     // AdminRole64ID:  {
     //     steamID: {type: String, required: false },
     //     isLinkedToSteam: {type: Boolean, required: false }
