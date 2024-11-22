@@ -1,0 +1,451 @@
+   * {
+       box-sizing: border-box;
+    }
+   form {
+       text-align: center;
+   }
+    .content-body {
+        /*//*/
+        /*background-color: rgba(9, 7, 7, 0.93);*/
+        background-color: #0F1214;
+        color: #dddddd;
+        outline: #0e624c;
+        margin: 0;
+    }
+
+    .center_element {
+        margin: auto;
+        max-width: 300px;
+    }
+
+    .rolesTable {
+        /*text-align: left;*/
+        margin-left: auto;
+        margin-right: auto;
+        border-spacing: 14px;
+        border-bottom: #dddddd;
+        border-width: 0.2rem;
+        /*width: 80%;*/
+    }
+    .rolesTable .roleID {
+
+    }
+
+    .roleSection {
+        background-color: #1e2328;
+        margin-right: auto;
+        margin-left: auto;
+        /*text-align: center;*/
+        /*justify-content: center;*/
+        border: inset #310d20;
+        /*border-style: inset;*/
+        border-radius: 12px;
+        border-spacing: 0.2rem;
+        font-size: 1.25rem;
+        padding-top: 5%;
+        position: relative;
+        /*top: auto;*/
+    }
+
+    /*thead {*/
+    /*    background-color: #1c618f;*/
+    /*}*/
+
+
+    tr {
+        padding: 2px;
+        border: #261c26;
+        margin: 2px;
+    }
+
+    th {
+        text-align: center;
+        /*border: outset thin;*/
+        margin: 0;
+        /*padding: 0;*/
+    }
+
+    td {
+        text-align: center;
+    }
+
+
+    #page {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: .5rem;
+    }
+
+    input {
+      box-sizing: border-box;
+      max-width: 100%;
+      overflow: hidden;
+      /* width: 100%; */
+    }
+    
+
+    main {
+        border-top: 1px solid grey;
+        border-bottom: 1px solid grey;
+        /* min-height: 50%; */
+        flex-grow: 1;
+        flex-shrink: 1;
+        overflow:auto;
+    }
+
+    label {
+        justify-self: end;
+    }
+
+    #controls {
+        /* min-height: 20%; */
+        font-size: 1.4rem;
+        display: grid;
+        grid-template-columns: 1fr 6fr 1fr 1fr;
+        grid-auto-rows: 1.4rem;
+        grid-gap: .5rem;
+        max-width: 70rem;
+
+    }
+
+    .columns {
+        float: left;
+        width: 33.3%;
+        padding: 8px;
+    }
+
+    #output {
+        width: 100%;
+        height: 100%;
+        background: #eee;
+        overflow: auto;
+        margin: 0;
+    }
+    #output p {
+        border-bottom: 1px solid grey;
+        padding-bottom: .25rem;
+    }
+    #header {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    #header li {
+        display: block;
+        font-style: italic;
+        font-size: 1.2rem;
+        padding: .25rem;
+        margin:0 1rem;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: rgba(61, 57, 57, 0.74);
+}
+
+    .topnav a {
+        float:left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 20px 16px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    /*
+    Styling for the submit button on the role edit page and the profile page.
+    */
+   .submitButton{
+      font-family: 'Ubuntu', sans-serif;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: 170px;
+      height: 40px;
+      line-height: 1;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border: 3px solid #8C82FC;
+      background: #fff;
+      color: #8C82FC;
+      border-radius: 40px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all .35s;
+    }
+
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+
+    .topnav a.split {
+        float: right;
+        background-color: #04AA6D;
+        color: white;
+    }
+
+   .submitButton:hover{
+      background: #8C82FC;
+      color: #fff;
+   }
+
+    .submitButton span{
+      opacity: 1;
+      visibility: visible;
+      transition: all .35s;
+    }
+
+    .helpSection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 10rem;
+    }
+    .helpDiv {
+      width: 30%; /* Set the width of each box */
+      min-height: 100px; /* Set the height of each box */
+        justify-items: left;
+      margin: 1rem; /* Add some spacing between the boxes */
+    }
+
+
+    .addRoleSection {
+        align-items: start;
+        justify-items: left;
+    }
+
+    .table-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+   .dropdown {
+       border-color: #748b92;
+       color: #ffffff;
+       background-color: #0f1214;
+
+    }
+
+   .deleteRoleButton {
+        cursor: pointer;
+        color: rgb(255, 255, 255);
+        border-color: black;
+        background-color: rgb(245, 6, 2);
+        box-shadow: #1e2328;
+        padding: 12%;
+        border: solid;
+        border-radius: 22px;
+        border-width: 0.2rem;
+    }
+
+    .deleteRoleButton:hover {
+        color: rgb(237, 211, 211);
+        background-color: rgb(99, 8, 8);
+    }
+
+    .test-button {
+        width: 270px;
+        height: 80px;
+        border: none;
+        outline: none;
+        background: #2f2f2f;
+        color: #fff;
+        font-size: 22px;
+        border-radius: 40px;
+        text-align: center;
+        box-shadow: 0 6px 20px -5px rgba(0,0,0,0.4);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .tool_btn {
+        border-radius: 5px;
+        /*border: 1px solid var(--main-color);*/
+        border: 1px solid white;
+        padding: 12px 30px;
+        color: white;
+        /*color: var(--main-color);*/
+        font-size: 20px;
+        cursor: pointer;
+        font-weight: 400;
+        text-transform: uppercase;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        transition: border .3s,color .3s;
+    }
+
+
+    .default-button {
+        border-radius: 5px;
+        border: 1px solid white;
+        padding: 12px 30px;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        font-weight: 400;
+        text-transform: uppercase;
+        background: transparent;
+        transition: border .3s,color .3s;
+    }
+    .default-button:hover, .default-button:focus {
+      background-color: #1c618f;
+    }
+
+
+
+      /* Dropdown Button */
+    /*.addRoleButton {*/
+    /*  background-color: rgb(18, 126, 4);*/
+    /*  !* border-color: #5ba5d7; *!*/
+    /*  color: #efeaea;*/
+    /*  width: 100px;*/
+    /*  !* min-width: 80px; *!*/
+    /*  !* padding: 6%; *!*/
+    /*  font-size: 12px;*/
+    /*  border-radius: 14px;*/
+    /*  cursor: pointer;*/
+    /*  !* float: left; *!*/
+    /*}*/
+    .addRoleButton {
+        border-radius: 5px;
+        border: 1px solid white;
+        padding: 12px 30px;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        font-weight: 400;
+        text-transform: uppercase;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        transition: border .3s,color .3s;
+    }
+
+    /* Dropdown button on hover & focus */
+    .addRoleButton:hover, .addRoleButton:focus {
+      background-color: #1c618f;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .addRoleDivContent {
+      display: none;
+      position: absolute;
+      background-color: #3f4480;
+      /*min-width: 160px;*/
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Content inside the dropdown */
+    .addRoleDivContent div {
+      color: rgb(248, 238, 238);
+      border-color: #04AA6D;
+      padding: 4px 4px;
+      font-size: 1rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .addRoleDivContent div:hover {background-color: #070404;}
+
+    /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+    .show {display:block;} 
+
+    .adminRoleDropdown {
+        color: black;
+        /*width: 10rem;*/
+        width: 50%;
+        justify-items: left;
+    }
+
+    .daysContainer {
+      display: flex;
+      align-items: center;
+      /* flex-wrap: wrap; */
+    }
+  
+    .toggleAllCheckbox, .dayCheckbox {
+        margin-right: 5px;
+    }
+  
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .adminRoleDropdown.hover {
+        color: black;
+    }
+
+    .bottomContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /* .bottomContainer { */
+          /* display: flex; */
+         /* justify-content: space-between; /* To push submitSection to the left and center bottomdiv */
+         /* align-items: center; /* To vertically center both sections */
+         /* width: 100%; /* Optional: Set the container width as needed */
+         /* max-width: 1200px; /* Optional: Set a maximum width for the container */
+         /* margin: 0 auto; /* Optional: Center the container horizontally on the page */
+         /* padding-left: 20px; /* Optional: Add some spacing around the container */
+    /*}*
+
+    .submitSection {
+        align-items: center;
+        justify-content: center;
+        display: inline-block;
+    }
+
+    .bottomDiv {
+
+      display: inline-block;
+      justify-content: left; /* Align items at each end of the container */
+      /*align-items: center; !* Center-align items vertically *!*/
+      /*min-height: 20rem;*/
+    /* } */
+    .bottomOfPage {
+        min-height: 20rem;
+    }
+
+
+
