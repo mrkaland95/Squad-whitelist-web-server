@@ -2,6 +2,10 @@ import axios from "axios";
 import { useQuery } from '@tanstack/react-query';
 import React, {useEffect, useState} from "react";
 import {IPrivilegedRole} from "../../../../dist/backend/schema";
+import * as sweetalert2 from "sweetalert2";
+import Swal from "sweetalert2";
+import {steamID64Regex, WeekDays} from "../utils/utils";
+
 
 export type WhitelistResponseData = {
     isAuthenticated: boolean,
@@ -25,6 +29,16 @@ type WhitelistRow = {
     name?: string
 }
 
+const daysMap = new Map([
+    [0, 'Sunday'],
+    [1, 'Monday'],
+    [2, 'Tuesday'],
+    [3, 'Wednesday'],
+    [4, 'Thursday'],
+    [5, 'Friday'],
+    [6, 'Saturday'],
+])
+
 
 function Whitelist() {
     const { data, isLoading, error } = useQuery({
@@ -36,9 +50,9 @@ function Whitelist() {
     if (error) return <p>Error: {error.message}</p>;
     if (!data) return <p>Something went wrong when loading your whitelist data</p>
 
-    const ifDataForm = <div>
-
-    </div>
+    const activeDaysList = data.whitelistActiveDays.map(day => {
+        return daysMap.get(day)
+    })
 
     return (
     <>
@@ -51,9 +65,10 @@ function Whitelist() {
             </h3>
             <p>You currently have {data.whitelistSlots} whitelist slots available<br/>
             </p>
+            <div>
             <p style={{paddingTop: '5px', paddingBottom: '5px'}}>
-            Which are active the follow days: {data.whitelistActiveDays}
             </p>
+            </div>
             <br/>
             <div className={"whitelist-forms"}>
                 <WhiteListForms whitelist={data.whitelistedSteam64IDs} whitelistSlots={data.whitelistSlots} onSubmit={onFormSubmit}></WhiteListForms>
@@ -87,8 +102,6 @@ function WhiteListForms({whitelist, whitelistSlots, onSubmit}: WhitelistFormProp
     }, [whitelist, whitelistSlots])
 
 
-
-
     function handleInputChange(index: number, field: 'steamID' | 'name', value: string) {
         const updatedRows = [...whitelistRows]
         updatedRows[index][field] = value;
@@ -96,10 +109,6 @@ function WhiteListForms({whitelist, whitelistSlots, onSubmit}: WhitelistFormProp
     }
 
 
-    // TODO this wills end a post request to the server with the steamID, which will then send an API request to steam to see if the steamID is valid.
-    function validateSteamID(steamID: string) {
-
-    }
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
@@ -117,7 +126,7 @@ function WhiteListForms({whitelist, whitelistSlots, onSubmit}: WhitelistFormProp
                     onChange={(e) => handleInputChange(index, 'steamID', e.target.value)}
                     placeholder={"Enter SteamID"}
                     style={{marginRight: '10px'}}
-                    // required={true}
+                    maxLength={17}
                 />
                 <input
                     type={"text"}
@@ -125,12 +134,12 @@ function WhiteListForms({whitelist, whitelistSlots, onSubmit}: WhitelistFormProp
                     onChange={(e) => handleInputChange(index, 'name', e.target.value)}
                     placeholder={"Enter Optional Name"}
                     style={{marginRight: '10px'}}
+                    maxLength={50}
                 />
                 <button
                     type={"button"}
-                    onClick={() => validateSteamID(row.steamID)}
-                    style={{marginRight: '10px'}}
-                >
+                    onClick={() => validateSteamIDs(whitelistRows)}
+                    style={{marginRight: '10px'}}>
                     Check SteamID
                 </button>
             </div>
@@ -141,6 +150,8 @@ function WhiteListForms({whitelist, whitelistSlots, onSubmit}: WhitelistFormProp
     </form>
     )
 }
+
+
 
 async function fetchUsersWhitelists(): Promise<WhitelistResponseData> {
     const res = await axios({
@@ -156,13 +167,81 @@ async function fetchUsersWhitelists(): Promise<WhitelistResponseData> {
     return res.data
 }
 
+//
+//     // TODO this wills end a post request to the server with the steamID, which will then send an API request to steam to see if the steamID is valid.
+// function validateSteamID(steamID: string, whitelistRows: WhitelistRow[]) {
+//     const result = steamID64Regex.test(steamID)
+//     console.log("Validate triggered for ID: ", steamID, "result: ", result)
+//     // TODO add some sort of feedback if the steamID does not pass the regex validation.
+//     // if (!result) return;
+//
+//
+//     console.log(whitelistRows)
+//
+//     const postRes = axios({
+//         method: "POST",
+//         url: "http://localhost:5000/api/profile/validateid",
+//         data: {steamID: steamID},
+//         withCredentials: true
+//     })
+// }
+
+
+
+function validateSteamIDs(whitelistRows: WhitelistRow[]) {
+    // const result = steamID64Regex.test(steamID)
+    // console.log("Validate triggered for ID: ", steamID, "result: ", result)
+    // if (!result) return;
+
+    // TODO add some sort of feedback if the steamID does not pass the regex validation.
+    for (const row of whitelistRows) {
+        if (steamID64Regex.test(row.steamID)) {
+            console.log("Invalid steamID detected.")
+        }
+    }
+    console.log(whitelistRows)
+
+    const postRes = axios({
+        method: "POST",
+        url: "http://localhost:5000/api/profile/validateid",
+        data: {steamID: whitelistRows},
+        withCredentials: true
+    })
+}
+
+
+
 async function onFormSubmit(data: WhitelistRow[]) {
+  // let buttonRes = await Swal.fire({
+  //           title: "Are you sure you wish to delete this role?",
+  //           text: "These changes are permanent",
+  //           showCancelButton: true,
+  //           confirmButtonColor: "#9d0d0d",
+  //           cancelButtonColor: "#1939b7",
+  //           background: "FFF",
+  //           confirmButtonText: "SUBMIT",
+  //       })
+  //
 
 
 
+    data = data.filter(row => {
+        return row?.steamID;
+    })
 
-    console.log("Sumbit data", data)
+    const res = await axios({
+        method: 'POST',
+        url: "http://localhost:5000/api/profile/whitelist",
+        withCredentials: true,
+        data: data
+    })
 
+    if (res.status == 200 && res.data.success) {
+        Swal.fire("Sucessfully installed IDs", "", "success")
+    } else {
+        // TODO add modal here
+        console.log("Something went wrong when sending steamIDs")
+    }
 }
 
 
