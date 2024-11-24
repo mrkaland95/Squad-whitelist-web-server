@@ -1,8 +1,17 @@
+:root {
+  --primary-color: #2c333d;
+  --backup-color: #2c333d;
+  --secondary-color: #423451;
+  --font-size-large: 1.5rem;
+  --spacing: 16px;
+  --primary-font-size: 1rem;
+}
+
 * {
+  /*border: lime 1px solid;*/
   box-sizing: border-box;
-  margin: 0;
   padding: 0;
-  background-color: #2b2b2f;
+  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10,6 +19,7 @@
 }
 
 .app-container {
+  background-color: var(--primary-color);
 }
 
 .body {
@@ -17,57 +27,63 @@
   display: flex;
 }
 
-.content {
-  display: flex;
-  justify-content: center;
-  margin-inline: auto;
-  padding-inline: 2rem;
-  /*background-color: #0d0f11;*/
-  color: white;
-  min-height: 100vh;
-  min-width: 80vw;
-}
-
 .nav-container {
-    background-color: #0d0f11;
-    color: white;
-    justify-content: space-between;
-    width: 100%;
-    gap: 2rem;
-    padding: 0 1rem;
-  border-bottom: 0.1rem solid #0d0f11;
-  border-radius: 0.2rem;
+  background-color: #202633;
+  color: white;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 0.05rem solid #ffffff;
+  /*box-shadow: ;*/
 }
 
 .nav-container ul {
+  background-color: inherit;
 
 }
 
 .nav-container ul li {
-
+  color: transparent;
 }
 
 .sidebar-div {
     /* TODO adjust width to be more dynamic, IDK i don't know CSS well.*/
-    width: 200px;
-    background-color: #0e0d0d;
-  border-right: 1px solid #e7d7d7;
+  width: 200px;
+  min-width: 150px;
+  background-color: #202633;
+  border-right: 0.05rem solid #ffffff;
+  /*margin-right: 5%;*/
+  /*margin-right: auto;*/
   /*padding-top: 0.5rem;*/
   /*border: #466d95;*/
   /*border-spacing: 10px;*/
-
-  /*border*/
-    color: #ffffff;
-    padding: 1rem;
+  padding: 1.5rem;
+  color: #ffffff;
 }
-
-
 
 .sidebar-div ul {
     list-style-type: none;
 }
 .sidebar-div ul li {
     padding: 8px 0;
+}
+
+.content-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 2rem;
+  /*margin-inline: auto;*/
+  /*padding-inline: 2rem 2rem;*/
+  /*background-color: #0d0f11;*/
+  color: #d9d9d9;
+  /*min-height: 100vh;*/
+  min-width: 80vw;
+}
+
+.user-container {
+  padding-top: 10%;
+  max-width: 40%;
 }
 
 .home-container {
@@ -81,22 +97,56 @@
   align-self: center;
 }
 
+.whitelist-container {
+  padding: 5rem 2rem;
+  background-color: #2c333d;
+}
+
+.steam-id-input {
+  background-color: rgba(68, 74, 91, 0.42);
+  color: rgba(230, 238, 226, 0.63);
+  margin: 10px 10px 10px 0;
+  font-size: 16px;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+  padding: 0.15rem;
+  padding-inline: 0.5rem;
+  box-shadow: 0.05rem 0.05rem 0.1rem rgba(65, 60, 60, 0.15);
+}
+
+.whitelist-container .row-box {
+  padding: 0.1rem;
+  display: flex;
+  align-items: center;
+}
+
+.whitelist-container button {
+  cursor: pointer;
+}
+
+.check-steamid-button {
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #242b36;
+}
+
 .button-div {
   margin: auto;
   flex: auto;
 }
 
 .default-button {
-    border-radius: 5px;
-    border: 1px solid white;
-    padding: 12px 30px;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    font-weight: 400;
-    text-transform: uppercase;
-    background: transparent;
-    transition: border .3s,color .3s;
+  border-radius: 5px;
+  border: 1px solid white;
+  color: white;
+  -moz-box-shadow: 0 0 10px rgb(0,0,0);
+  padding: 12px 30px;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: 400;
+  text-transform: uppercase;
+  background: transparent;
+  transition: border .3s,color .3s;
 }
 .default-button:hover, .default-button:focus {
     background-color: #1c618f;
@@ -105,3 +155,4 @@
 .dropdown {
 
 }
+
