@@ -35,6 +35,8 @@ const discordOauth2ClientPublic = String(process.env.DISCORD_OAUTH_CLIENT_PUBLIC
 const discordOauth2ClientSecret = String(process.env.DISCORD_OAUTH_CLIENT_SECRET)
 const discordAppToken = String(process.env.DISCORD_APP_TOKEN)
 const organizationName = String(process.env.ORGANIZATION_NAME)
+const steamAPIKey = String(process.env.STEAM_API_KEY)
+
 const debug = Boolean(process.env.DEBUG)
 const discordRolesAuthorizedForAdmin = JSON.parse(String(process.env.DISCORD_ROLES_AUTHORIZED_FOR_ADMIN))
 
@@ -50,5 +52,6 @@ export default {
     mongoDBConnectionString,
     debug,
     discordLoggingEnabled,
-    discordRolesAuthorizedForAdmin
+    discordRolesAuthorizedForAdmin,
+    steamAPIKey
 }

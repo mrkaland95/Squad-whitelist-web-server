@@ -8,3 +8,19 @@ export function generateRandomString() {
 
     return randomString;
 }
+
+export const steamID64Regex  = /^7656119\d{10}$/;
+
+/*
+A week day corresponding to a number, particularly to inbuilt Javascript
+Date.getDay() method.
+ */
+export enum WeekDays {
+    Sunday = 0,
+    Monday = 1,
+    Tuesday = 2,
+    Wednesday = 3,
+    Thursday = 4,
+    Friday = 5,
+    Saturday = 6
+}

@@ -21,7 +21,6 @@ Main entry point, initializes the web server, bot etc.
 const logger = new Logger(LoggingLevel.DEBUG)
 
 
-
 async function main() {
     logger.info("Booting up whitelist management server...")
     await webServerStart()
@@ -39,9 +38,6 @@ async function main() {
 
     discordClient.once(Events.ClientReady, readyClient => {
         logger.info(`Discord Bot connected, logged in as ${readyClient.user.tag}`)
-        // refreshDiscordUsersAndRoles()
-        // refreshUsersCache()
-        // ActiveUsersFromCache()
     })
 
 }

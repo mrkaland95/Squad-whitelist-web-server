@@ -2,9 +2,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {generateRandomString} from "../utils/utils";
 
-
 const accessTokenName = 'access_token'
-
 
 
 function DiscordAuth() {

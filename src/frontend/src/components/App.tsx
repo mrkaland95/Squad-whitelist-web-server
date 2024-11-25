@@ -10,6 +10,7 @@ import Profile from "../pages/Profile";
 import User from "../pages/User";
 import Whitelist from "../pages/Whitelist";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import AdminGroups from "../pages/AdminGroups";
 
 
 const queryClient = new QueryClient();
@@ -21,12 +22,13 @@ function App() {
         <Navbar></Navbar>
         <div className="body">
             <Sidebar></Sidebar>
-            <div className="content">
+            <div className="content-container">
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/user" element={<User />} />
                     <Route path="/whitelist" element={<Whitelist />} />
+                    <Route path="/admingroups" element={<AdminGroups />} />
                 </Routes>
             </div>
         </div>

@@ -1,3 +1,9 @@
+import {NextFunction, Response, Request} from "express";
+import {logger, Logger} from "../../logger";
+
+
+
+
 
 /**
  * Requests an access token on behalf of a user,
@@ -82,10 +88,16 @@ export async function refreshAccessToken(refreshToken: string, clientID: string,
 }
 
 
+export async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+    if (!req.session?.discordUser) {
+        logger.debug(`Recieved request from unauthenticated user...`)
+        logger.debug(`Session data: `, req?.session)
+        res.status(401).send('Unauthenticated user')
+        return
+    }
 
-
-
-
+    next()
+}
 
 
 

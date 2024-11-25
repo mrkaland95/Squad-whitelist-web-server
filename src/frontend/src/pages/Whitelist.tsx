@@ -32,6 +32,14 @@ function Whitelist() {
             <h3>
                This page is used for managing your whitelist slots for other people
             </h3>
+            <div className={"active-days-container"}>
+                <p><em>
+                    Days that your whitelist slots are active
+                </em></p>
+                {activeDaysList.map((day) => (
+                    <p style={{}}><b>{day}</b></p>
+                ))}
+            </div>
             <p style={{paddingBottom: '10px', paddingTop: '10px'}}>
                 <em>You currently have {data.whitelistSlots} whitelist slots available<br/></em>
             </p>
@@ -93,7 +101,6 @@ function WhiteListForms({whitelist, whitelistSlots}: WhitelistFormProps) {
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={whitelistRows.map((row) => row.steamID)}>
           <form onSubmit={handleSubmit}>
-          {/*<label>Whitelist Slots</label>*/}
           {whitelistRows.map((row, index) => (
             <SortableRow
               key={row.steamID || index}
@@ -103,9 +110,12 @@ function WhiteListForms({whitelist, whitelistSlots}: WhitelistFormProps) {
               onInputChange={handleInputChange}
             />
           ))}
-          <div style={{ display: 'flex', justifyContent: "center" }}>
-            <button type="submit" style={{ marginTop: '20px' }} className="default-button" title={"Submit your steamIDs to our systems"}>
+          <div className={"whitelist-container button-wrapper"}>
+            <button type={"submit"} style={{ marginTop: '20px' }} className={"default-button"} title={"Submit your steamIDs to our systems"}>
               Submit
+            </button>
+            <button type={"button"} style={{ marginTop: '20px'}} className={"default-button"} title={"Validate IDs"}>
+                Validate IDs
             </button>
           </div>
         </form>
@@ -129,8 +139,10 @@ function SortableRow({ id, row, index, onInputChange }: any) {
       className={"whitelist-container row-box"}
       style={{ ...style}}
       {...attributes}
-      {...listeners}
     >
+      <span {...listeners} style={{ cursor: 'grab', marginRight: '10px' }}>
+        ☰
+      </span>
       <input
         type="text"
         value={row.steamID}
@@ -147,9 +159,9 @@ function SortableRow({ id, row, index, onInputChange }: any) {
         maxLength={50}
         className={"steam-id-input"}
       />
-      <button type="button" style={{ marginRight: '10px' }}>
-        Check SteamID
-      </button>
+      {/*<button type="button" style={{ marginRight: '10px' }}>*/}
+      {/*  Check SteamID*/}
+      {/*</button>*/}
     </div>
   );
 }
@@ -240,7 +252,7 @@ async function onFormSubmit(data: WhitelistRow[]) {
     })
 
     if (res.status == 200 && res.data.success) {
-        Swal.fire("Sucessfully installed IDs", "", "success")
+        await Swal.fire("Sucessfully installed IDs", "", "success")
     } else {
         // TODO add modal here
         console.log("Something went wrong when sending steamIDs")

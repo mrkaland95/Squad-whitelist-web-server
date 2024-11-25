@@ -15,13 +15,7 @@ router.post('/admin', async (req, res) => {
     if (!(req.headers["content-type"] === "application/json")) {
         res.status(400).send('This endpoint only accepts JSON.')
     }
-
-
-
 })
-
-
-
 
 
 

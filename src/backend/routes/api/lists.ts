@@ -12,7 +12,7 @@ router.get('/:list', async (req, res) => {
         const listsRequest = req.params
         const listsCache = getListsCache()
         const foundList = listsCache.get(listsRequest?.list)
-        if (!listsRequest && !foundList) {
+        if (!listsRequest || !foundList) {
             res.status(404).send('Requested list does not exist.')
         } else {
             res.format({
@@ -28,11 +28,9 @@ router.get('/:list', async (req, res) => {
 })
 
 
-
-
-
 const expressRoute: ExpressRoute = {
     name: baseRoute,
     router: router
 }
+
 export default expressRoute

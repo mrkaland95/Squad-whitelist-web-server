@@ -23,7 +23,6 @@ export enum InGameAdminPermissions {
     FEATURE_TEST = "featuretest",
     FORCE_TEAM_CHANGE = "forceteamchange",
     RESERVE = "reserve",
-    DEMOS = "demos",
     DEBUG = "debug",
     TEAM_CHANGE = "teamchange"
 }
@@ -132,16 +131,11 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
             name: { type: String, required: false },
         },
     ],
-
     // Change this into an object that stores the steamID and whether the steamID was retrieved by steam authentication directly.
     UserID64: {
         steamID: {type: String, required: true},
         isLinkedToSteam: {type: Boolean, required: false, default: false }
     },
-    // AdminRole64ID:  {
-    //     steamID: {type: String, required: false },
-    //     isLinkedToSteam: {type: Boolean, required: false }
-    // },
     Enabled: { type: Boolean, required: true },
     }, {
         timestamps: true

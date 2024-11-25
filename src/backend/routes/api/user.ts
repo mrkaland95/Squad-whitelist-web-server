@@ -16,9 +16,6 @@ router.get('/info', async (req, res) => {
 
     const userData = getUsersFromCache(true)
     console.log(userData)
-
-
-
 })
 
 

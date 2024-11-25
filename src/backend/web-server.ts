@@ -7,7 +7,7 @@ import mainRouter from "./routes/main";
 import MongoStore from "connect-mongo";
 import cors from 'cors';
 import {Logger, LoggingLevel} from "./logger";
-import profileRouter from "./routes/api/profile";
+import profileRouter from "./routes/api/user";
 
 
 const app = express()
@@ -28,25 +28,23 @@ app.use(express.urlencoded({
 )
 
 app.use(cors({
-    origin: `http://localhost:${env.webPort}`
+    origin: `http://localhost:3000`,
+    credentials: true
 }))
-// app.use(cookieParser())
-
-
-
-
-// MongoStore
-// app.use(sessionStorage)
-// app.use(cookieParser())
 
 // TODO add logging level from .env file
 const logger = new Logger(LoggingLevel.INFO, true)
 
-
-
 async function webServerStart() {
     const routesPath = path.join(__dirname, 'routes')
+    const apiRoutesPath = path.join(__dirname, 'routes', 'api')
+
     const routes = await loadRoutes(routesPath)
+    const apiRoutes = await loadRoutes(apiRoutesPath)
+
+    console.log('api routes', apiRoutes)
+
+
     logger.debug('Loading main router...')
     app.use(mainRouter)
     logger.debug('Loading profile router...')
@@ -62,7 +60,7 @@ async function webServerStart() {
 }
 
 
-async function logMiddleFunction(req: Request, res: Response) {
+async function logMiddleFunction(req: Request, res: Response, next) {
     // req.
 }
 

@@ -71,3 +71,6 @@ export class Logger {
         return msg
     }
 }
+
+export const logger = new Logger(LoggingLevel.DEBUG, true)
+

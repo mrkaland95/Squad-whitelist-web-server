@@ -7,6 +7,9 @@ function Sidebar() {
             <h2>Options</h2>
             <ul>
                 <li>
+                    <div>TODO MANAGE USER DROPDOWN HERE</div>
+                </li>
+                <li>
                     <a href={"/profile"}>Profile</a>
                 </li>
                 <li>
@@ -14,6 +17,12 @@ function Sidebar() {
                 </li>
                 <li>
                     <a href={"/whitelist"}>Whitelist</a>
+                </li>
+            </ul>
+            <h3>Admin Dashboard</h3>
+            <ul>
+                <li>
+                    <a href={"/admingroups"}>Admin Groups</a>
                 </li>
             </ul>
         </div>
