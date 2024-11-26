@@ -52,39 +52,14 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
       setAdminGroupRows([...adminGroups, emptyGroup])
   }
 
-
-const handlePermissionTransfer = (
-  groupIndex: number,
-  permission: string,
-  toCurrent: boolean
-) => {
-  setAdminGroupRows((prevRows) => {
-    const updatedRows = [...prevRows];
-    const group = updatedRows[groupIndex];
-
-    if (toCurrent) {
-      // Move from available to current
-      if (!group.Permissions.includes(permission)) {
-        group.Permissions.push(permission);
-      }
-    } else {
-      // Move from current to available
-      group.Permissions = group.Permissions.filter((perm) => perm !== permission);
-    }
-
-    return updatedRows;
-  });
-};
-
   return (
     <div>
       <table id="admin-groups-table">
         <thead>
           <tr>
             <th style={{ textAlign: "left" }}>Group Name</th>
-            <th>Active Permissions</th>
-            <th>Available Permissions</th>
-            <th>Enabled</th>
+            <th style={{ textAlign: 'left' }}>Permissions</th>
+            <th style={{ textAlign: 'left' }}>Enabled</th>
             <th></th>
           </tr>
         </thead>
@@ -108,40 +83,49 @@ const handlePermissionTransfer = (
                 />
               </td>
                 <td>
-                    <div className="admin-group-container permissions-wrapper current">
-                        {group.Permissions.map((permission) => (
-                            <button
-                                key={`current-${index}-${permission}`}
-                                title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                                onClick={() => handlePermissionTransfer(index, permission, false)}>
-                                {permission}
-                            </button>
+                    <div className={"admin-group-container permissions-wrapper"}>
+                        {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys()).map((permission: string) => (
+                            <div>
+                                <input type={"checkbox"}
+                                       id={`${index}-${permission}`}
+                                       key={permission}
+                                       title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                       checked={group.Permissions.includes(permission)}
+                                       onChange={(e) => {
+                                           if (e.target.checked) {
+                                               if (!group.Permissions.includes(permission)) {
+                                                   group.Permissions.push(permission);
+                                               }
+                                           } else {
+                                               group.Permissions = group.Permissions.filter(value => value !== permission);
+                                           }
+
+                                           setAdminGroupRows((prev) => {
+                                               const updated = [...prev];
+                                               updated[index].Permissions = group.Permissions;
+                                               return updated;
+                                           });
+                                       }}
+                                />
+                                <label style={{paddingLeft: '0.25rem'}} htmlFor={`${index}-${permission}`}>{permission}</label>
+                                <p style={{fontSize: '0.8rem'}}>
+                                    <em>
+                                    {ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                    </em>
+                                </p>
+                            </div>
                         ))}
-                    </div>
-                </td>
-                <td>
-                    <div className="admin-group-container permissions-wrapper available">
-                        {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys())
-                            .filter((permission) => !group.Permissions.includes(permission))
-                            .map((permission) => (
-                                <button
-                                    key={`available-${index}-${permission}`}
-                                    title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                                    onClick={() => handlePermissionTransfer(index, permission, true)}
-                                >
-                                    {permission}
-                                </button>
-                            ))}
                     </div>
                 </td>
                 <td>
                     <input
                         type="checkbox"
                         checked={group.Enabled}
-                        onChange={() => {
+                        onChange={(event) => {
+                            console.log(event.target.checked);
                             setAdminGroupRows((prev) => {
                                 const updated = [...prev];
-                                updated[index].Enabled = !updated[index].Enabled;
+                                updated[index].Enabled = event.target.checked
                                 return updated;
                             });
                         }}
@@ -171,14 +155,22 @@ function WhitelistGroup() {
     return (
     <tr title={"The whitelist group cannot be deleted"} style={{padding:'10px 10px'}}>
         <td>
-            Whitelist
+            <input
+                className={"steam-id-input"}
+                value={"Whitelist"}
+                disabled={true}
+            />
         </td>
         <td>
-            <button title={"This is the only permission the whitelist role can have."}>reserve</button>
+            <div className={"admin-group-container permissions-wrapper"}>
+                <label>
+                <input type={"checkbox"} checked={true} disabled={true}/>
+                    reserve
+                </label>
+
+            </div>
         </td>
-        <td></td>
-        <td><input type={"checkbox"} disabled={true}/></td>
-        {/*<td><input type={"checkbox"}></td>*/}
+        <td><input type={"checkbox"} disabled={true} checked={true}/></td>
     </tr>)
 }
 
@@ -204,23 +196,23 @@ async function fetchAdminGroups() {
 
 const ALL_POSSIBLE_PERMISSIONS_MAP = new Map([
     ["changemap", "Allows a user to use map commands such as adminSetNextLayer or adminChangeMap."],
-    ["canseeadminchat", "Allows a user to *see* the in game admin chat as well as teamkills."],
+    ["canseeadminchat", "Allows a user to *see* the in-game admin chat, as well as teamkills on the feed."],
+    ["chat", "Allows a user to *write* in the in-game admin chat, and use server broadcasts."],
     ["balance", "Allows a user to switch teams regardless of current balance."],
-    ["pause", "Allows a user to pause the game. Does not work on licensed servers."],
-    ["cheat", "Allows a user to gain access to some cheat commands. Does not work on licensed servers."],
-    ["private", "Allows a user to set a server to private, does not work for licensed servers?"],
-    ["chat", "Allows a user to *write* in admin chat, or use server broadcasts."],
     ["kick", "Allows a user to use in game kick commands."],
     ["ban", "Allows a user to use in game ban commands."],
-    ["config", "Allows a user to set server configuration. Does not work for licensed servers."],
     ["immune", "Users with this permission cannot be kicked or banned."],
     ["manageserver", "Allows a user to use various management commands, including to kill the server."],
     ["cameraman", "Allows a user to use the in-game spectator camera."],
-    ["featuretest", "Allows a user to use debug commands, such as spawning vehicles."],
     ["forceteamchange", "Allows a user to force team swap other players."],
     ["reserve", "Allows a user to use the priority/whitelist queue."],
-    ["debug", "Allows a user to use debug commands."],
     ["teamchange", "Allows a user to change teams without penalty."],
+    ["config", "Allows a user to set server configuration. Does not work for licensed servers."],
+    ["pause", "Allows a user to pause the game. Does not work on licensed servers."],
+    ["private", "Allows a user to set a server to private, does not work for licensed servers?"],
+    ["cheat", "Allows a user to gain access to some cheat commands. Does not work on licensed servers."],
+    ["featuretest", "Allows a user to use debug commands, such as spawning vehicles. Does not work on licensed servers"],
+    ["debug", "Allows a user to use debug commands."],
 ])
 
 
