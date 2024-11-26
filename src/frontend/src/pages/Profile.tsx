@@ -1,7 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {IDiscordRole} from "../../../../dist/backend/schema";
-
+// import {IDiscordRole} from "../../../../dist/backend/schema";
 
 
 async function fetchUserData(): Promise<responseData> {
@@ -49,9 +48,13 @@ type responseData = {
     username: string,
     globalName: string
     avatar: string
-    usersValidRoles: IDiscordRole
+    usersValidRoles: IDiscordRole[]
 }
 
-
+export interface IDiscordRole {
+    RoleID: string,
+    RoleName: string,
+    GuildID: string
+}
 
 export default Profile

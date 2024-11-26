@@ -1,5 +1,6 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
+import {logger} from "./logger";
 
 
 /*
@@ -209,3 +210,23 @@ export const APIKeysDB = mongoose.model('APIKeys', apiSchema)
 export const LoggingDB = mongoose.model('Logs', loggingSchema)
 export const AllServerRolesDB = mongoose.model('AllServerRoles', allServerRolesSchema)
 export const ListsDB = mongoose.model('Lists', listSchema)
+
+export async function initializeWhitelistGroup() {
+    try {
+        logger.debug(`Initializing "whitelist" group.`)
+        const whitelistGroup = await AdminGroupsDB.findOneAndUpdate({
+            GroupName: 'Whitelist'
+        }, {
+            GroupName: 'Whitelist',
+            Permissions: [InGameAdminPermissions.RESERVE],
+            IsWhitelistGroup: true,
+            Enabled: true
+       }, {
+            new: true,
+            runValidators: true,
+            upsert: true
+       })
+    } catch (e) {
+        console.error("Error when initializing whitelist group", e)
+    }
+}

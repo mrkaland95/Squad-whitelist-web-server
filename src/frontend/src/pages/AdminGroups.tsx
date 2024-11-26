@@ -1,7 +1,10 @@
-import {useQuery} from "@tanstack/react-query";
-import React, {useState} from "react";
+import
+{useQuery} from "@tanstack/react-query";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {InGameAdminPermissions} from "../../../../dist/backend/schema";
+
+
+// import {InGameAdminPermissions} from "../../../../dist/backend/schema";
 
 axios.defaults.withCredentials = true
 
@@ -25,32 +28,53 @@ function AdminGroups() {
 }
 
 
-function AdminGroupForm({ adminGroups }: any) {
-  const [adminGroupRows, setAdminGroupRows] = useState<AdminGroupRow[]>(
-    [...adminGroups]
-  );
+function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
+  const [adminGroupRows, setAdminGroupRows] = useState<AdminGroupRow[]>([]);
 
-  // Handle transferring permissions between boxes
-  const handlePermissionTransfer = (
-    groupIndex: number,
-    permission: string,
-    toCurrent: boolean
-  ) => {
-    setAdminGroupRows((prevRows) => {
-      const updatedRows = [...prevRows];
-      const group = updatedRows[groupIndex];
-
-      if (toCurrent) {
-        // Move from available to current
-        group.Permissions.push(permission);
-      } else {
-        // Move from current to available
-        group.Permissions = group.Permissions.filter((perm) => perm !== permission);
+  useEffect(() => {
+      for (const group of adminGroups) {
+        if (group.GroupName.toLowerCase() === 'whitelist') {
+            const i = adminGroups.indexOf(group)
+            adminGroups.splice(i, 1)
+        }
       }
+      setAdminGroupRows([...adminGroups])
+  }, [adminGroups]);
 
-      return updatedRows;
-    });
-  };
+  function onAddGroup() {
+      const emptyGroup: AdminGroupRow = {
+          _id: crypto.randomUUID(),
+          GroupName: '',
+          Enabled: true,
+          IsWhitelistGroup: false,
+          Permissions: []
+      }
+      setAdminGroupRows([...adminGroups, emptyGroup])
+  }
+
+
+const handlePermissionTransfer = (
+  groupIndex: number,
+  permission: string,
+  toCurrent: boolean
+) => {
+  setAdminGroupRows((prevRows) => {
+    const updatedRows = [...prevRows];
+    const group = updatedRows[groupIndex];
+
+    if (toCurrent) {
+      // Move from available to current
+      if (!group.Permissions.includes(permission)) {
+        group.Permissions.push(permission);
+      }
+    } else {
+      // Move from current to available
+      group.Permissions = group.Permissions.filter((perm) => perm !== permission);
+    }
+
+    return updatedRows;
+  });
+};
 
   return (
     <div>
@@ -65,13 +89,14 @@ function AdminGroupForm({ adminGroups }: any) {
           </tr>
         </thead>
         <tbody>
+        <WhitelistGroup></WhitelistGroup>
           {adminGroupRows.map((group: AdminGroupRow, index) => (
             <tr key={group._id || index.toString()}>
               <td>
                 <input
                   className="steam-id-input"
                   value={group.GroupName}
-                  placeholder="Group Name"
+                  placeholder="Enter Group Name"
                   onChange={(e) => {
                     const newGroupName = e.target.value;
                     setAdminGroupRows((prev) => {
@@ -82,96 +107,89 @@ function AdminGroupForm({ adminGroups }: any) {
                   }}
                 />
               </td>
-              <td>
-                <div className="admin-group-container permissions-wrapper current">
-                  {group.Permissions.map((permission) => (
+                <td>
+                    <div className="admin-group-container permissions-wrapper current">
+                        {group.Permissions.map((permission) => (
+                            <button
+                                key={`current-${index}-${permission}`}
+                                title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                onClick={() => handlePermissionTransfer(index, permission, false)}>
+                                {permission}
+                            </button>
+                        ))}
+                    </div>
+                </td>
+                <td>
+                    <div className="admin-group-container permissions-wrapper available">
+                        {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys())
+                            .filter((permission) => !group.Permissions.includes(permission))
+                            .map((permission) => (
+                                <button
+                                    key={`available-${index}-${permission}`}
+                                    title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                    onClick={() => handlePermissionTransfer(index, permission, true)}
+                                >
+                                    {permission}
+                                </button>
+                            ))}
+                    </div>
+                </td>
+                <td>
+                    <input
+                        type="checkbox"
+                        checked={group.Enabled}
+                        onChange={() => {
+                            setAdminGroupRows((prev) => {
+                                const updated = [...prev];
+                                updated[index].Enabled = !updated[index].Enabled;
+                                return updated;
+                            });
+                        }}
+                    />
+                </td>
+                <td>
                     <button
-                      key={permission}
-                      title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                      onClick={() =>
-                        handlePermissionTransfer(index, permission, false)
-                      }
-                    >
-                      {permission}
+                        onClick={() => {
+                            setAdminGroupRows((prev) =>
+                                prev.filter((_, i) => i !== index)
+                            );
+                        }}>
+                        DELETE
                     </button>
-                  ))}
-                </div>
-              </td>
-              <td>
-                <div className="admin-group-container permissions-wrapper available">
-                  {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys())
-                    .filter((permission) => !group.Permissions.includes(permission))
-                    .map((permission) => (
-                      <button
-                        key={permission}
-                        title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                        onClick={() =>
-                          handlePermissionTransfer(index, permission, true)
-                        }
-                      >
-                        {permission}
-                      </button>
-                    ))}
-                </div>
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={group.Enabled}
-                  onChange={() => {
-                    setAdminGroupRows((prev) => {
-                      const updated = [...prev];
-                      updated[index].Enabled = !updated[index].Enabled;
-                      return updated;
-                    });
-                  }}
-                />
-              </td>
-              <td>
-                <button
-                  onClick={() => {
-                    setAdminGroupRows((prev) =>
-                      prev.filter((_, i) => i !== index)
-                    );
-                  }}
-                >
-                  DELETE
-                </button>
-              </td>
+                </td>
             </tr>
           ))}
         </tbody>
       </table>
+        <ButtonRow onAddGroup={onAddGroup} onGroupsSumbit={null}></ButtonRow>
     </div>
   );
 }
 
-function onCurrentPermissionClick(index: number) {
-
-}
-
-function onAvailablePermissionClick(index: number) {
-
-}
-
-
-
-
-
 
 function WhitelistGroup() {
     return (
-    <tr>
+    <tr title={"The whitelist group cannot be deleted"} style={{padding:'10px 10px'}}>
         <td>
             Whitelist
         </td>
+        <td>
+            <button title={"This is the only permission the whitelist role can have."}>reserve</button>
+        </td>
+        <td></td>
+        <td><input type={"checkbox"} disabled={true}/></td>
+        {/*<td><input type={"checkbox"}></td>*/}
     </tr>)
 }
 
 
 
-async function onGroupsSubmit(event: any) {
-
+function ButtonRow({onAddGroup, onGroupsSubmit}: any) {
+    return(
+    <div className={"admin-group-container buttons-container"}>
+        <button type={"button"} className={"default-button"} onClick={onGroupsSubmit}>Submit</button>
+        <button type={"button"} className={"default-button"} onClick={onAddGroup}>Add Group</button>
+    </div>)
 }
 
 async function fetchAdminGroups() {
@@ -183,7 +201,6 @@ async function fetchAdminGroups() {
 
     return res.data
 }
-
 
 const ALL_POSSIBLE_PERMISSIONS_MAP = new Map([
     ["changemap", "Allows a user to use map commands such as adminSetNextLayer or adminChangeMap."],
@@ -232,6 +249,27 @@ type AdminGroupRow = {
     IsWhitelistGroup: boolean
 }
 
+
+export enum InGameAdminPermissions {
+    CHANGE_MAP = "changemap",
+    CAN_SEE_ADMIN_CHAT = "canseeadminchat",
+    BALANCE = "balance",
+    PAUSE = "pause",
+    CHEAT = "cheat",
+    PRIVATE = "private",
+    CAN_USE_ADMIN_CHAT = "chat",
+    KICK = "kick",
+    BAN = "ban",
+    CONFIG = "config",
+    IMMUNE = "immune",
+    MANAGE_SERVER = "manageserver",
+    CAMERAMAN = "cameraman",
+    FEATURE_TEST = "featuretest",
+    FORCE_TEAM_CHANGE = "forceteamchange",
+    RESERVE = "reserve",
+    DEBUG = "debug",
+    TEAM_CHANGE = "teamchange"
+}
 
 
 export default AdminGroups

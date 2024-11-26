@@ -10,9 +10,7 @@ const connectionString = "mongodb://127.0.0.1:27017/whitelist-v2-throwaway"
 
 async function main() {
     await mongoose.connect(connectionString)
-
-
-
+    
     await DiscordUsersDB.deleteMany()
     await ListsDB.deleteMany()
     await AdminGroupsDB.deleteMany()

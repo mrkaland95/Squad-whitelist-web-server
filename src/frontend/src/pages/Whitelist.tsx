@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useQuery } from '@tanstack/react-query';
 import React, {useEffect, useState} from "react";
-import {IPrivilegedRole} from "../../../../dist/backend/schema";
+// import {IPrivilegedRole} from "../../../../dist/backend/schema";
 import Swal from "sweetalert2";
 import {steamID64Regex, WeekDays} from "../utils/utils";
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {IAdminGroup} from "./AdminGroups";
 
 
 function Whitelist() {
@@ -141,7 +142,7 @@ function SortableRow({ id, row, index, onInputChange }: any) {
       {...attributes}
     >
       <span {...listeners} style={{ cursor: 'grab', marginRight: '10px' }}>
-        ☰
+          ☰
       </span>
       <input
         type="text"
@@ -271,6 +272,14 @@ export type WhitelistResponseData = {
     }[],
 }
 
+export interface IPrivilegedRole {
+    RoleID: string,
+    RoleName: string,
+    AdminGroup?: IAdminGroup,
+    ActiveDays: [WeekDays],
+    WhitelistSlots: number
+    Enabled: boolean
+}
 
 type WhitelistFormProps = {
     whitelist: WhitelistRow[]
@@ -282,6 +291,7 @@ type WhitelistRow = {
     steamID: string
     name?: string
 }
+
 
 
 const daysMap = new Map([

@@ -24,6 +24,12 @@ function Sidebar() {
                 <li>
                     <a href={"/admingroups"}>Admin Groups</a>
                 </li>
+                <li>
+                    <a href={"/rolesedit"}>Roles</a>
+                </li>
+                <li>
+                    <a href={"listsedit"}>Lists</a>
+                </li>
             </ul>
         </div>
     )

@@ -11,6 +11,7 @@ import {
 } from "./cache";
 import mongoose from "mongoose";
 import {Logger, LoggingLevel} from "./logger";
+import {initializeWhitelistGroup} from "./schema";
 
 
 /*
@@ -26,15 +27,16 @@ async function main() {
     await webServerStart()
     await mongoose.connect(env.mongoDBConnectionString)
     await discordClient.login(env.discordAppToken)
+    await initializeWhitelistGroup()
 
     await refreshDiscordUsersAndRoles()
     await refreshUsersCache()
     await refreshListCache()
     await getAllUsersWithSpecialRoles()
 
-    setInterval(async => {
-        refreshUsersCache()
-    }, 60* 1000)
+    setInterval(async () => {
+        await refreshUsersCache()
+    }, 60 * 1000)
 
     discordClient.once(Events.ClientReady, readyClient => {
         logger.info(`Discord Bot connected, logged in as ${readyClient.user.tag}`)

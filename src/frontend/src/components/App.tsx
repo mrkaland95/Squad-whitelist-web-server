@@ -11,6 +11,7 @@ import User from "../pages/User";
 import Whitelist from "../pages/Whitelist";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import AdminGroups from "../pages/AdminGroups";
+import RoleEdit from "../pages/RoleEdit";
 
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/user" element={<User />} />
                     <Route path="/whitelist" element={<Whitelist />} />
                     <Route path="/admingroups" element={<AdminGroups />} />
+                    <Route path="/rolesedit" element={<RoleEdit />} />
                 </Routes>
             </div>
         </div>
