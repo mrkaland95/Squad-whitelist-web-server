@@ -2,9 +2,10 @@ import
 {useQuery} from "@tanstack/react-query";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import {Simulate} from "react-dom/test-utils";
+import cancel = Simulate.cancel;
 
-
-// import {InGameAdminPermissions} from "../../../../dist/backend/schema";
 
 axios.defaults.withCredentials = true
 
@@ -21,7 +22,7 @@ function AdminGroups() {
 
     return (
     <div className={"admin-group-container"}>
-        <h1>ADMIN GROUP MANAGEMENT</h1>
+        <h1 style={{paddingBottom: '1rem'}}>ADMIN GROUP MANAGEMENT</h1>
         <AdminGroupForm adminGroups={data}></AdminGroupForm>
     </div>
     )
@@ -30,6 +31,7 @@ function AdminGroups() {
 
 function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
   const [adminGroupRows, setAdminGroupRows] = useState<AdminGroupRow[]>([]);
+  const [initialAdminGroupRows, setInitialAdminGroupRows] = useState<AdminGroupRow[]>([...adminGroups]);
 
   useEffect(() => {
       for (const group of adminGroups) {
@@ -41,112 +43,189 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
       setAdminGroupRows([...adminGroups])
   }, [adminGroups]);
 
+
   function onAddGroup() {
       const emptyGroup: AdminGroupRow = {
-          _id: crypto.randomUUID(),
+          GroupID: crypto.randomUUID(),
           GroupName: '',
           Enabled: true,
           IsWhitelistGroup: false,
           Permissions: []
       }
-      setAdminGroupRows([...adminGroups, emptyGroup])
+      adminGroupRows.push(emptyGroup)
+      setAdminGroupRows([...adminGroupRows])
+  }
+
+
+  async function onSubmitGroup(e: any) {
+      const res = await Swal.fire({
+          title: 'Submit groups',
+          text: `Are you sure you want to submit groups?`,
+          icon: "question",
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          cancelButtonColor: "#9d0d0d",
+          backdrop: true
+      })
+
+      if (!res.isConfirmed) return;
+
+      if (adminGroupRows.some(row => !row.GroupName)) {
+          await Swal.fire({
+              title: `Empty group name`,
+              text: `Groups cannot have an empty name.`,
+              icon: "warning"
+          })
+          return
+      }
+
+      let duplicateGroups: AdminGroupRow[] = []
+      for (const group1 of adminGroupRows) {
+          for (const group2 of adminGroupRows) {
+              if (group1 === group2) {
+                  continue
+              }
+
+              if (group1.GroupName === group2.GroupName) {
+                  duplicateGroups.push(group1)
+              }
+          }
+      }
+
+      if (duplicateGroups.length > 0) {
+          await Swal.fire({
+              title: 'Duplicate group names',
+              text: `Groups cannot have duplicate names: ${duplicateGroups.map(group => group.GroupName).join('\n')}`,
+              icon: "warning"
+          })
+          return
+      }
+
+      const result = await axios.post(
+          'http://localhost:5000/api/admingroups',
+          {
+              adminGroupRows
+          }
+      )
+
+      if (result.statusText == 'OK') {
+          await Swal.fire({
+              title: 'Success',
+              text: `Successfully installed groups`,
+              icon: "success"
+          })
+      } else {
+          await Swal.fire({
+              title: 'Error',
+              text: `Error occured when installing groups`,
+              icon: "error"
+          })
+      }
   }
 
   return (
-    <div>
-      <table id="admin-groups-table">
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left" }}>Group Name</th>
-            <th style={{ textAlign: 'left' }}>Permissions</th>
-            <th style={{ textAlign: 'left' }}>Enabled</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-        <WhitelistGroup></WhitelistGroup>
-          {adminGroupRows.map((group: AdminGroupRow, index) => (
-            <tr key={group._id || index.toString()}>
-              <td>
-                <input
-                  className="steam-id-input"
-                  value={group.GroupName}
-                  placeholder="Enter Group Name"
-                  onChange={(e) => {
-                    const newGroupName = e.target.value;
-                    setAdminGroupRows((prev) => {
-                      const updated = [...prev];
-                      updated[index].GroupName = newGroupName;
-                      return updated;
-                    });
-                  }}
-                />
-              </td>
-                <td>
-                    <div className={"admin-group-container permissions-wrapper"}>
-                        {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys()).map((permission: string) => (
-                            <div>
-                                <input type={"checkbox"}
-                                       id={`${index}-${permission}`}
-                                       key={permission}
-                                       title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                                       checked={group.Permissions.includes(permission)}
-                                       onChange={(e) => {
-                                           if (e.target.checked) {
-                                               if (!group.Permissions.includes(permission)) {
-                                                   group.Permissions.push(permission);
-                                               }
-                                           } else {
-                                               group.Permissions = group.Permissions.filter(value => value !== permission);
-                                           }
+      <div>
+          <form onSubmit={e => {
+              e.preventDefault();
+              onSubmitGroup(e)}}>
 
-                                           setAdminGroupRows((prev) => {
-                                               const updated = [...prev];
-                                               updated[index].Permissions = group.Permissions;
-                                               return updated;
-                                           });
-                                       }}
-                                />
-                                <label style={{paddingLeft: '0.25rem'}} htmlFor={`${index}-${permission}`}>{permission}</label>
-                                <p style={{fontSize: '0.8rem'}}>
-                                    <em>
-                                    {ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                                    </em>
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </td>
-                <td>
-                    <input
-                        type="checkbox"
-                        checked={group.Enabled}
-                        onChange={(event) => {
-                            console.log(event.target.checked);
-                            setAdminGroupRows((prev) => {
-                                const updated = [...prev];
-                                updated[index].Enabled = event.target.checked
-                                return updated;
-                            });
-                        }}
-                    />
-                </td>
-                <td>
-                    <button
-                        onClick={() => {
-                            setAdminGroupRows((prev) =>
-                                prev.filter((_, i) => i !== index)
-                            );
-                        }}>
-                        DELETE
-                    </button>
-                </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-        <ButtonRow onAddGroup={onAddGroup} onGroupsSumbit={null}></ButtonRow>
-    </div>
+              <table id="admin-groups-table">
+                  <thead>
+                  <tr>
+                      <th id={"GroupName"} style={{textAlign: "left"}}>Group Name</th>
+                      <th id={"Permissions"} style={{textAlign: 'left'}}>Permissions</th>
+                      <th id={"Enabled"} style={{textAlign: 'left'}}>Enabled</th>
+                      <th id={"Delete"}></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <WhitelistGroup></WhitelistGroup>
+
+                  {adminGroupRows.map((group: AdminGroupRow, index) => (
+                      <tr key={group.GroupID || index.toString()}>
+                          <td>
+                              <input
+                                  className="steam-id-input"
+                                  value={group.GroupName}
+                                  placeholder="Enter Group Name"
+                                  onChange={(e) => {
+                                      const newGroupName = e.target.value;
+                                      setAdminGroupRows((prev) => {
+                                          const updated = [...prev];
+                                          updated[index].GroupName = newGroupName;
+                                          return updated;
+                                      });
+                                  }}
+                              />
+                          </td>
+                          <td>
+                              <div className={"admin-group-container permissions-wrapper"}>
+                                  {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys()).map((permission: string) => (
+                                      <div>
+                                          <input type={"checkbox"}
+                                                 id={`${index}-${permission}`}
+                                                 key={permission}
+                                                 title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                                 checked={group.Permissions.includes(permission)}
+                                                 onChange={(e) => {
+                                                     if (e.target.checked) {
+                                                         if (!group.Permissions.includes(permission)) {
+                                                             group.Permissions.push(permission);
+                                                         }
+                                                     } else {
+                                                         group.Permissions = group.Permissions.filter(value => value !== permission);
+                                                     }
+
+                                                     setAdminGroupRows((prev) => {
+                                                         const updated = [...prev];
+                                                         updated[index].Permissions = group.Permissions;
+                                                         return updated;
+                                                     });
+                                                 }}
+                                          />
+                                          <label style={{paddingLeft: '0.25rem'}}
+                                                 htmlFor={`${index}-${permission}`}>{permission}</label>
+                                          <p style={{fontSize: '0.8rem'}}>
+                                              <em>
+                                                  {ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
+                                              </em>
+                                          </p>
+                                      </div>
+                                  ))}
+                              </div>
+                          </td>
+                          <td>
+                              <input
+                                  type="checkbox"
+                                  checked={group.Enabled}
+                                  onChange={(event) => {
+                                      console.log(event.target.checked);
+                                      setAdminGroupRows((prev) => {
+                                          const updated = [...prev];
+                                          updated[index].Enabled = event.target.checked
+                                          return updated;
+                                      });
+                                  }}
+                              />
+                          </td>
+                          <td>
+                              <button
+                                  onClick={() => {
+                                      setAdminGroupRows((prev) =>
+                                          prev.filter((_, i) => i !== index)
+                                      );
+                                  }}>
+                                  DELETE
+                              </button>
+                          </td>
+                      </tr>
+                  ))}
+          </tbody>
+    </table>
+    {/*<ButtonRow onAddGroup={onAddGroup} onGroupsSubmit={onSubmitGroup}></ButtonRow>*/}
+    <ButtonRow onAddGroup={onAddGroup}></ButtonRow>
+    </form>
+  </div>
   );
 }
 
@@ -163,11 +242,10 @@ function WhitelistGroup() {
         </td>
         <td>
             <div className={"admin-group-container permissions-wrapper"}>
-                <label>
-                <input type={"checkbox"} checked={true} disabled={true}/>
+                <input id={"whitelist-checkbox"} type={"checkbox"} checked={true} disabled={true}/>
+                <label htmlFor={"whitelist-checkbox"} style={{paddingLeft: '0.25rem'}}>
                     reserve
                 </label>
-
             </div>
         </td>
         <td><input type={"checkbox"} disabled={true} checked={true}/></td>
@@ -176,10 +254,10 @@ function WhitelistGroup() {
 
 
 
-function ButtonRow({onAddGroup, onGroupsSubmit}: any) {
+function ButtonRow({onAddGroup}: any) {
     return(
     <div className={"admin-group-container buttons-container"}>
-        <button type={"button"} className={"default-button"} onClick={onGroupsSubmit}>Submit</button>
+        <button type={"submit"} className={"default-button"} >Submit</button>
         <button type={"button"} className={"default-button"} onClick={onAddGroup}>Add Group</button>
     </div>)
 }
@@ -234,11 +312,14 @@ type AdminGroupFormProps = {
 
 type AdminGroupRow = {
     _id?: string
+    GroupID: string,
     GroupName: string,
     // ActivePermissions: InGameAdminPermissions[]
     Permissions: string[]
     Enabled: boolean,
     IsWhitelistGroup: boolean
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 

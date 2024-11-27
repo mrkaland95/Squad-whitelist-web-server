@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
-import {logger} from "./logger";
+import {defaultLogger} from "./logger";
 
 
 /*
@@ -56,6 +56,7 @@ export interface IDiscordUser extends Document {
  * Interface that describes a group of in-game permissions.
  */
 export interface IAdminGroup extends Document {
+    GroupID: string;
     GroupName: string,
     Permissions: [InGameAdminPermissions],
     Enabled: boolean,
@@ -144,11 +145,12 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
 );
 
 const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
-    GroupName: { type: String, required: true, unique: true },
+    GroupName: { type: String, unique: true, required: true },
+    GroupID: { type: String, unique: true, required: true, default: crypto.randomUUID },
     Permissions: { type: [String], required: true, enum: Object.values(InGameAdminPermissions) },
     Enabled: { type: Boolean, required: true, default: true },
     // I.e. all the user's whitelist slots will only get used for a list if it contains this group.
-    IsWhitelistGroup: { type: Boolean, required: true, default: false, unique: true }
+    IsWhitelistGroup: { type: Boolean, required: true, default: false}
     }, {
         timestamps: true
     }
@@ -213,10 +215,11 @@ export const ListsDB = mongoose.model('Lists', listSchema)
 
 export async function initializeWhitelistGroup() {
     try {
-        logger.debug(`Initializing "whitelist" group.`)
+        defaultLogger.debug(`Initializing "whitelist" group.`)
         const whitelistGroup = await AdminGroupsDB.findOneAndUpdate({
             GroupName: 'Whitelist'
         }, {
+            GroupID: crypto.randomUUID(),
             GroupName: 'Whitelist',
             Permissions: [InGameAdminPermissions.RESERVE],
             IsWhitelistGroup: true,

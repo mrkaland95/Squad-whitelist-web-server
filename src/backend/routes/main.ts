@@ -1,7 +1,7 @@
 import {response, Router} from "express";
 import env from "../load-env";
 import {DiscordUser} from "../utils/types";
-import {Logger, LoggingLevel} from "../logger";
+import {defaultLogger, Logger, LoggingLevel} from "../logger";
 import {accessTokenRequestSuccess, isAuthenticated, requestAccessToken, requestDiscordUserData} from "./utils/utils";
 import {getUsersFromCache, GetUsersFromCacheMap, processWhitelistProps} from "../cache";
 import {AdminGroupsDB, DiscordUsersDB, IDiscordRole, IPrivilegedRole, RolesDB} from "../schema";
@@ -276,6 +276,51 @@ router.get('/api/admingroups', isAuthenticated, async (req, res) => {
     const roles = await AdminGroupsDB.find()
 
     res.json(roles)
+})
+
+router.post('/api/admingroups', isAuthenticated, async (req, res) => {
+    if (!req.session?.discordUser) {
+        res.sendStatus(500)
+        return
+    }
+
+    // TODO add authorization for this route.
+    const groups = req.body?.adminGroupRows
+    if (!(groups instanceof Array)) {
+        res.sendStatus(400)
+        return
+    }
+
+    console.log(groups)
+
+    for (const elem of groups) {
+        try {
+            if (!elem.GroupID) {
+                elem.GroupID = crypto.randomUUID()
+            }
+
+            const res = await AdminGroupsDB.findOneAndUpdate({
+                GroupID: elem.GroupID,
+            }, {
+                GroupID: elem.GroupID,
+                GroupName: elem.GroupName,
+                Enabled: elem.Enabled,
+                Permissions: elem.Permissions,
+                IsWhitelistGroup: false
+            }, {
+                upsert: true,
+                new: true,
+                runValidators: true
+            })
+        } catch (err) {
+            console.log(err)
+            // defaultLogger.error(err)
+            res.sendStatus(500)
+            return
+        }
+    }
+
+    res.sendStatus(200)
 })
 
 
