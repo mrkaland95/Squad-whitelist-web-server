@@ -8,12 +8,10 @@ File responsible for handling caches of data, and initializing the discord and d
 TODO might want to factor out the initialization of discord and db to somewhere else that makes sense.
  */
 
-
 const logger = new Logger(LoggingLevel.DEBUG)
 
 let usersCache: Map<string, IDiscordUser> = new Map()
 let listsCache: Map<string, string> = new Map()
-
 
 export const discordClient = new Client({
     intents: [
@@ -27,8 +25,10 @@ export const discordClient = new Client({
  * Refreshes the local cache with all discord users stored in the DB.
  * Returns a pointer to the users cache after the refresh has been performed.
  */
-export async function refreshUsersCache() {
-    const discordUsers = await DiscordUsersDB.find()
+export async function refreshUsersCache(userData = null) {
+
+    let discordUsers = userData ? userData : await DiscordUsersDB.find();
+
     usersCache.clear()
     for (const user of discordUsers) {
         usersCache.set(user.DiscordID, user)
@@ -49,7 +49,7 @@ export async function generateLists(listsData: IListEndpoint[], rolesData: IPriv
 
 
 /**
- * Dynamically generates a permission list based on admingroups assigned to a specific list and discord roles.
+ * Dynamically generates a permission list based on admin groups assigned to a specific list and discord roles.
  *
  * An admin group is a name mapped to a set of in-game permissions,
  * So for example you could have an admin group with name "Whitelist", with an array of permissions ["reserve"]
@@ -158,7 +158,7 @@ export async function refreshListCache() {
 }
 
 
-export function getUsersFromCache(activeUsersOnly: boolean = true): IDiscordUser[] {
+export function getUsersFromCacheList(activeUsersOnly: boolean = true): IDiscordUser[] {
     const usersValues = usersCache.values()
     let users: IDiscordUser[]
 

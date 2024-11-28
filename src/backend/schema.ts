@@ -1,6 +1,7 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
 import {defaultLogger} from "./logger";
+import {randomUUID} from "node:crypto";
 
 
 /*
@@ -144,9 +145,10 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
     }
 );
 
+
 const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
     GroupName: { type: String, unique: true, required: true },
-    GroupID: { type: String, unique: true, required: true, default: crypto.randomUUID },
+    GroupID: { type: String, unique: true, required: true },
     Permissions: { type: [String], required: true, enum: Object.values(InGameAdminPermissions) },
     Enabled: { type: Boolean, required: true, default: true },
     // I.e. all the user's whitelist slots will only get used for a list if it contains this group.
@@ -219,7 +221,7 @@ export async function initializeWhitelistGroup() {
         const whitelistGroup = await AdminGroupsDB.findOneAndUpdate({
             GroupName: 'Whitelist'
         }, {
-            GroupID: crypto.randomUUID(),
+            GroupID: randomUUID(),
             GroupName: 'Whitelist',
             Permissions: [InGameAdminPermissions.RESERVE],
             IsWhitelistGroup: true,

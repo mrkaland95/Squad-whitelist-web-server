@@ -1,13 +1,13 @@
 import {Router} from "express";
-import {ExpressRoute} from "../../utils/types";
-import {getListsCache, refreshListCache} from "../../cache";
+import {ExpressRoute} from "../../../utils/types";
+import {getListsCache, refreshListCache} from "../../../cache";
 
 
 const router = Router()
-const baseRoute = "lists"
-
 
 router.get('/:list', async (req, res) => {
+
+    console.log(req.params)
     try {
         const listsRequest = req.params
         const listsCache = getListsCache()
@@ -28,9 +28,4 @@ router.get('/:list', async (req, res) => {
 })
 
 
-const expressRoute: ExpressRoute = {
-    name: baseRoute,
-    router: router
-}
-
-export default expressRoute
+export default { router: router }

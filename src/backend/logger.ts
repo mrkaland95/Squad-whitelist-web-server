@@ -25,7 +25,7 @@ export class Logger {
     debug(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.DEBUG) {
             const output = this.constructMsg(LoggingLevel.DEBUG)
-            console.log(output, ...message)
+            console.log(output, ...message, ']')
         }
     }
 
@@ -64,13 +64,9 @@ export class Logger {
             msg += `[${now.toISOString().slice(0, 19)}]_`
         }
         msg += `[${LoggingLevel[level]}]_[`
-        // for (const param of message) {
-        //     msg += `${message}_`
-        // }
-        // msg += `[${LoggingLevel[level]}]_[${message}]`
         return msg
     }
 }
 
-export const logger = new Logger(LoggingLevel.DEBUG, true)
+export const defaultLogger = new Logger(LoggingLevel.INFO, true)
 

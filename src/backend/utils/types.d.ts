@@ -6,6 +6,7 @@ import {ClientUser} from "discord.js";
 declare module 'express-session' {
     interface SessionData {
         discordUser: DiscordUser
+        isAuthenticated: boolean
         user: any
     }
 }

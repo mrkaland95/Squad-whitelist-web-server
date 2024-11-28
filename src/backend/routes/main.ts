@@ -3,10 +3,10 @@ import env from "../load-env";
 import {DiscordUser} from "../utils/types";
 import {defaultLogger, Logger, LoggingLevel} from "../logger";
 import {accessTokenRequestSuccess, isAuthenticated, requestAccessToken, requestDiscordUserData} from "./utils/utils";
-import {getUsersFromCache, GetUsersFromCacheMap, processWhitelistProps} from "../cache";
+import {getUsersFromCacheList, GetUsersFromCacheMap, processWhitelistProps} from "../cache";
 import {AdminGroupsDB, DiscordUsersDB, IDiscordRole, IPrivilegedRole, RolesDB} from "../schema";
 import {getPlayerSummarySteam} from "../utils/steamAPI";
-import user from "./api/user";
+import user from "./api/v1/user";
 
 /*
 This is the main router.
@@ -35,60 +35,6 @@ router.get('/', async (req, res) => {
     res.status(401).send('User was not logged in')
 })
 
-// TODO move these to the "auth" router file once dynamic route loading has been fixed.
-router.get('/api/logout', async (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            console.error("Error when destroying session: ", err)
-            res.status(500).send('Internal server error')
-        } else {
-            res.status(200).redirect('/')
-        }
-    })
-})
-
-router.get('/api/login', async (req, res) => {
-    const { code } = req.query
-
-    logger.debug(`Recieved login request from user with IP: ${req.ip}`)
-    console.log('req.query: ', req.query)
-
-    if (req.session?.user) {
-        res.redirect('/profile')
-        return
-    }
-
-    if (!code) {
-        logger.debug('User has no code')
-        res.status(400).send('No authorization code included.')
-        return
-    }
-
-    let redirectURI = `http://localhost:5000/api/login/`
-
-    const accessTokenRequest = await requestAccessToken(String(code), env.discordOauth2ClientPublic, env.discordOauth2ClientSecret, redirectURI)
-
-    if (accessTokenRequest.statusCode !== 200) {
-        return
-    }
-
-    // If the status code was 200, it means the request was a success, and we can cast it.
-    const accessTokenData = (accessTokenRequest.body as accessTokenRequestSuccess)
-    let discordUser: DiscordUser
-    try {
-        discordUser = await requestDiscordUserData(accessTokenData)
-    } catch (e) {
-        res.status(401).send('Unsuccesfully authenticated')
-        req.session.destroy( () => {})
-        return
-    }
-
-    const name = discordUser.global_name ? discordUser?.global_name : discordUser.username
-    logger.info(`Discord user ${name} succesfully authenticated.`)
-    req.session.discordUser = discordUser
-    req.session.save()
-    res.redirect('http://localhost:3000/')
-})
 
 router.get('/api/auth/userinfo', async (req, res) => {
     logger.debug('Recieved user info request...', req.originalUrl)
@@ -130,198 +76,142 @@ router.get('/api/auth/userinfo', async (req, res) => {
     res.status(200).json(responseData)
 })
 
-router.get('/api/profile/user', async (req, res) => {
-    // TODO factor this out and use a logging middleware function.
-    logger.debug(`Recieved request about user info... Route: `, req.route.path)
-    if (!req.session?.discordUser) {
-        logger.debug(`Recieved request from unauthenticated user...`)
-        logger.debug(`Session data: `, req?.session)
-        res.status(401).send('Unauthorized user.')
-        return
-    }
-
-    const userDBData = GetUsersFromCacheMap(true).get(req.session.discordUser.id)
-    const specialRolesDBData = await RolesDB.find()
-
-    if (!userDBData) {
-        res.status(401).send('Unable to find user in the servers systems.')
-        return
-    }
-
-    const validRoles = specialRolesDBData.filter(role => {
-        return userDBData.Roles.includes(role.RoleID)
-    })
-
-    const whitelistProps = processWhitelistProps(userDBData, validRoles)
-
-    const responseData: WhitelistResponseData = {
-        isAuthenticated: true,
-        validRoles: validRoles,
-        whitelistSlots: whitelistProps.WhitelistSlots,
-        whitelistActiveDays: whitelistProps.WhitelistActiveDays,
-        whitelistedSteam64IDs: userDBData.Whitelist64IDs,
-        userSteamID: userDBData.UserID64
-    }
-
-    res.json(responseData).status(200)
-})
-
-
-router.post('/api/profile/whitelist', isAuthenticated, async (req, res) => {
-    if (!req.session?.discordUser) {
-        logger.error(`"Is authenticated" function did not catch unauthenticated user before hitting the "/api/profile/whitelist" route.`)
-        res.send('Internal Server Error')
-        return
-    }
-
-    let body = req.body
-
-    logger.debug(`Whitelist update: `, body)
-
-    if (!(body instanceof Array)) {
-        res.status(400).send()
-        return
-    }
-
-    logger.debug(`Whitelist update, valid array...`)
-
-    let invalidData = false
-    for (const elem of body) {
-        if (!elem?.steamID) {
-            invalidData = true
-        }
-        if (!elem?.name) {
-            elem.name = ''
-        }
-    }
-    if (invalidData) {
-        res.status(400).send()
-        return
-    }
-
-    logger.debug(`Whitelist update, valid data, adding to db...`)
-
-    const dbRes = await DiscordUsersDB.findOneAndUpdate({
-        DiscordID: req.session.discordUser.id
-    }, {
-        Whitelist64IDs: body
-    }, {
-        runValidators: true,
-        upsert: true
-    }).exec()
-
-    logger.debug(`Successfully added steamIDs to db.`)
-
-    res.status(200).json({success: true})
-})
+// router.get('/api/profile/user', async (req, res) => {
+//     // TODO factor this out and use a logging middleware function.
+//     logger.debug(`Recieved request about user info... Route: `, req.route.path)
+//     if (!req.session?.discordUser) {
+//         logger.debug(`Recieved request from unauthenticated user...`)
+//         logger.debug(`Session data: `, req?.session)
+//         res.status(401).send('Unauthorized user.')
+//         return
+//     }
+//
+//     const userDBData = GetUsersFromCacheMap(true).get(req.session.discordUser.id)
+//     const specialRolesDBData = await RolesDB.find()
+//
+//     if (!userDBData) {
+//         res.status(401).send('Unable to find user in the servers systems.')
+//         return
+//     }
+//
+//     const validRoles = specialRolesDBData.filter(role => {
+//         return userDBData.Roles.includes(role.RoleID)
+//     })
+//
+//     const whitelistProps = processWhitelistProps(userDBData, validRoles)
+//
+//     const responseData: WhitelistResponseData = {
+//         isAuthenticated: true,
+//         validRoles: validRoles,
+//         whitelistSlots: whitelistProps.WhitelistSlots,
+//         whitelistActiveDays: whitelistProps.WhitelistActiveDays,
+//         whitelistedSteam64IDs: userDBData.Whitelist64IDs,
+//         userSteamID: userDBData.UserID64
+//     }
+//
+//     res.json(responseData).status(200)
+// })
 
 
-router.post('/api/profile/validateid', isAuthenticated, async (req, res) => {
-    if (!req.session?.discordUser) {
-        return
-    }
+// router.post('/api/profile/whitelist', isAuthenticated, async (req, res) => {
+//     if (!req.session?.discordUser) {
+//         logger.error(`"Is authenticated" function did not catch unauthenticated user before hitting the "/api/profile/whitelist" route.`)
+//         res.send('Internal Server Error')
+//         return
+//     }
+//
+//     let body = req.body
+//
+//     logger.debug(`Whitelist update: `, body)
+//
+//     if (!(body instanceof Array)) {
+//         res.status(400).send()
+//         return
+//     }
+//
+//     logger.debug(`Whitelist update, valid array...`)
+//
+//     let invalidData = false
+//     for (const elem of body) {
+//         if (!elem?.steamID) {
+//             invalidData = true
+//         }
+//         if (!elem?.name) {
+//             elem.name = ''
+//         }
+//     }
+//     if (invalidData) {
+//         res.status(400).send()
+//         return
+//     }
+//
+//     logger.debug(`Whitelist update, valid data, adding to db...`)
+//
+//     const dbRes = await DiscordUsersDB.findOneAndUpdate({
+//         DiscordID: req.session.discordUser.id
+//     }, {
+//         Whitelist64IDs: body
+//     }, {
+//         runValidators: true,
+//         upsert: true
+//     }).exec()
+//
+//     logger.debug(`Successfully added steamIDs to db.`)
+//
+//     res.status(200).json({success: true})
+// })
 
-    if (!req.body?.steamID) {
-        res.status(400).send()
-        return
-    }
+
+// router.post('/api/profile/validateid', isAuthenticated, async (req, res) => {
+//     if (!req.session?.discordUser) {
+//         return
+//     }
+//
+//     if (!req.body?.steamID) {
+//         res.status(400).send()
+//         return
+//     }
+//
+//
+//     res.status(200).send()
+//     return
+//
+//     // console.log(req.body)
+//
+//     const result = await getPlayerSummarySteam(req.body.steamID)
+//
+//
+//     res.status(200).send()
+// })
+//
+//
+// router.post('/api/profile/userid', isAuthenticated, async (req, res) => {
+//     if (!req.session?.discordUser) {
+//         return
+//     }
+//
+//     const steamID = req.body.steamID
+//
+//     logger.debug(`Received steamID: `, steamID)
+//
+//     const userUpdateRes = await DiscordUsersDB.findOneAndUpdate({
+//         DiscordID: req.session.discordUser.id
+//     }, {
+//         UserID64: {steamID: steamID, isLinkedToSteam: false}
+//     }, {
+//         upsert: true,
+//         runValidators: true
+//     })
+//
+//     if (!userUpdateRes) {
+//         res.sendStatus(500)
+//         return
+//     }
+//
+//     res.sendStatus(200)
+// })
 
 
-    res.status(200).send()
-    return
-
-    // console.log(req.body)
-
-    const result = await getPlayerSummarySteam(req.body.steamID)
-
-
-    res.status(200).send()
-})
-
-
-router.post('/api/profile/userid', isAuthenticated, async (req, res) => {
-    if (!req.session?.discordUser) {
-        return
-    }
-
-    const steamID = req.body.steamID
-
-    logger.debug(`Received steamID: `, steamID)
-
-    const userUpdateRes = await DiscordUsersDB.findOneAndUpdate({
-        DiscordID: req.session.discordUser.id
-    }, {
-        UserID64: {steamID: steamID, isLinkedToSteam: false}
-    }, {
-        upsert: true,
-        runValidators: true
-    })
-
-    if (!userUpdateRes) {
-        res.sendStatus(500)
-        return
-    }
-
-    res.sendStatus(200)
-})
-
-router.get('/api/admingroups', isAuthenticated, async (req, res) => {
-    if (!req.session?.discordUser) {
-        res.sendStatus(500)
-        return
-    }
-    // TODO add authorization for this route.
-
-    logger.debug(`Fetching roles from DB...`)
-    const roles = await AdminGroupsDB.find()
-
-    res.json(roles)
-})
-
-router.post('/api/admingroups', isAuthenticated, async (req, res) => {
-    if (!req.session?.discordUser) {
-        res.sendStatus(500)
-        return
-    }
-
-    // TODO add authorization for this route.
-    const groups = req.body?.adminGroupRows
-    if (!(groups instanceof Array)) {
-        res.sendStatus(400)
-        return
-    }
-
-    console.log(groups)
-
-    for (const elem of groups) {
-        try {
-            if (!elem.GroupID) {
-                elem.GroupID = crypto.randomUUID()
-            }
-
-            const res = await AdminGroupsDB.findOneAndUpdate({
-                GroupID: elem.GroupID,
-            }, {
-                GroupID: elem.GroupID,
-                GroupName: elem.GroupName,
-                Enabled: elem.Enabled,
-                Permissions: elem.Permissions,
-                IsWhitelistGroup: false
-            }, {
-                upsert: true,
-                new: true,
-                runValidators: true
-            })
-        } catch (err) {
-            console.log(err)
-            // defaultLogger.error(err)
-            res.sendStatus(500)
-            return
-        }
-    }
-
-    res.sendStatus(200)
-})
 
 
 export type UserInfo = {

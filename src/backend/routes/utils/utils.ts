@@ -1,5 +1,5 @@
 import {NextFunction, Response, Request} from "express";
-import {logger, Logger} from "../../logger";
+import {defaultLogger, Logger} from "../../logger";
 
 
 
@@ -60,6 +60,12 @@ export async function requestDiscordUserData(accessTokenData: accessTokenRequest
 }
 
 
+/**
+ * Refreshes a discord access token.
+ * @param refreshToken
+ * @param clientID
+ * @param clientSecret
+ */
 export async function refreshAccessToken(refreshToken: string, clientID: string, clientSecret: string) {
     const grantType = "refresh_token"
     const tokenURL = 'https://discord.com/api/oauth2/token'
@@ -90,8 +96,8 @@ export async function refreshAccessToken(refreshToken: string, clientID: string,
 
 export async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     if (!req.session?.discordUser) {
-        logger.debug(`Recieved request from unauthenticated user...`)
-        logger.debug(`Session data: `, req?.session)
+        defaultLogger.debug(`Recieved request from unauthenticated user...`)
+        defaultLogger.debug(`Session data: `, req?.session)
         res.status(401).send('Unauthenticated user')
         return
     }

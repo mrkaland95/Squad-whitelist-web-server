@@ -1,13 +1,13 @@
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import session from 'express-session'
 import env from './load-env'
-import {loadRoutes} from "./utils/utils";
+import {loadRoutes, loadRoutes2} from "./utils/utils";
 import path from "path";
 import mainRouter from "./routes/main";
 import MongoStore from "connect-mongo";
 import cors from 'cors';
 import {Logger, LoggingLevel} from "./logger";
-import profileRouter from "./routes/api/user";
+import profileRouter from "./routes/api/v1/user";
 
 
 const app = express()
@@ -37,22 +37,20 @@ const logger = new Logger(LoggingLevel.INFO, true)
 
 async function webServerStart() {
     const routesPath = path.join(__dirname, 'routes')
-    const apiRoutesPath = path.join(__dirname, 'routes', 'api')
 
-    const routes = await loadRoutes(routesPath)
-    const apiRoutes = await loadRoutes(apiRoutesPath)
-
-    console.log('api routes', apiRoutes)
-
+    const routes = loadRoutes2(routesPath)
 
     logger.debug('Loading main router...')
     app.use(mainRouter)
-    logger.debug('Loading profile router...')
-    app.use(profileRouter)
+
+    logger.debug('Loading routers...')
     for (const route of routes) {
-        logger.debug(`Loading base route: ${route.name}`)
-        app.use(`/${route.name}`, route.router)
+        logger.debug(`Loading base route, ${route.baseRoute}, route name: ${route.routeName}`)
+        const baseRoute = `${route.baseRoute}/${route.routeName}`
+        logger.debug(baseRoute)
+        app.use(baseRoute, route.router)
     }
+
 
     app.listen(env.webPort, () => {
         logger.info(`Web server up and running on port: ${env.webPort}`)
@@ -60,7 +58,7 @@ async function webServerStart() {
 }
 
 
-async function logMiddleFunction(req: Request, res: Response, next) {
+async function logMiddleFunction(req: Request, res: Response, next: NextFunction) {
     // req.
 }
 
