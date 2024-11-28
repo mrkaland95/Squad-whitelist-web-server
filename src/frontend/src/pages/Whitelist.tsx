@@ -8,13 +8,16 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {IAdminGroup} from "./AdminGroups";
+import {getUsersWhitelist, postAdminGroups, postUserWhitelists} from "../utils/fetch";
 
 
 function Whitelist() {
     const { data, isLoading, error } = useQuery({
         queryKey: ['whitelist'],
-        queryFn: fetchUsersWhitelists,
+        queryFn: getUsersWhitelist,
     });
+
+    console.log(error)
 
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -160,27 +163,11 @@ function SortableRow({ id, row, index, onInputChange }: any) {
         maxLength={50}
         className={"steam-id-input"}
       />
-      {/*<button type="button" style={{ marginRight: '10px' }}>*/}
-      {/*  Check SteamID*/}
-      {/*</button>*/}
     </div>
   );
 }
 
 
-async function fetchUsersWhitelists(): Promise<WhitelistResponseData> {
-    const res = await axios({
-        method: "GET",
-        url: "http://localhost:5000/api/profile/user",
-        withCredentials: true
-    })
-
-    if(res.status != 200) {
-        throw new Error("Unable to fetch whitelist data.")
-    }
-
-    return res.data
-}
 
 //
 //     // TODO this wills end a post request to the server with the steamID, which will then send an API request to steam to see if the steamID is valid.
@@ -216,12 +203,7 @@ function validateSteamIDs(whitelistRows: WhitelistRow[]) {
     }
     console.log(whitelistRows)
 
-    const postRes = axios({
-        method: "POST",
-        url: "http://localhost:5000/api/profile/validateid",
-        data: {steamID: whitelistRows},
-        withCredentials: true
-    })
+
 }
 
 
@@ -244,13 +226,7 @@ async function onFormSubmit(data: WhitelistRow[]) {
         return row?.steamID;
     })
 
-
-    const res = await axios({
-        method: 'POST',
-        url: "http://localhost:5000/api/profile/whitelist",
-        withCredentials: true,
-        data: data
-    })
+    const res = await postUserWhitelists(data)
 
     if (res.status == 200 && res.data.success) {
         await Swal.fire("Sucessfully installed IDs", "", "success")
@@ -287,7 +263,7 @@ type WhitelistFormProps = {
 }
 
 
-type WhitelistRow = {
+export type WhitelistRow = {
     steamID: string
     name?: string
 }
