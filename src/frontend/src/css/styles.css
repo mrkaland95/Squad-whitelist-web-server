@@ -173,7 +173,7 @@ admin-group-container .table-wrapper {
 
 #admin-groups-table {
   width: 100%;
-  background-color: #30393f;
+  background-color: rgba(45, 51, 54, 0.76);
   border-radius: 0.5rem;
   border-collapse: collapse;
   border: 1px solid transparent;
@@ -186,15 +186,14 @@ admin-group-container .table-wrapper {
 }
 
 #admin-groups-table th {
-  background: hsla(240, 19%, 24%, 0.5);
+  background: hsla(240, 22%, 14%, 0.5);
+  text-align: left;
 }
 
 #admin-groups-table tr:nth-of-type(2n) {
   background: hsl(0 0% 0% / 0.1);
 }
 
-
-/*style={{ display: 'flex', justifyContent: "center" }*/
 
 
 .active-days-container {
