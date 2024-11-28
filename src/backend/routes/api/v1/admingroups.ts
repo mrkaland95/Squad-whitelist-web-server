@@ -5,7 +5,6 @@ import {isAuthenticated} from "../../utils/utils";
 import {defaultLogger} from "../../../logger";
 
 
-
 const router = Router()
 
 
@@ -15,7 +14,6 @@ router.use((req, res, next) => {
 })
 
 
-// TODO Add authentication here
 router.get('/', isAuthenticated, async (req, res) => {
     if (!req.session?.discordUser) {
         res.sendStatus(500)
@@ -42,6 +40,7 @@ router.post('/', isAuthenticated, async (req, res) => {
         res.sendStatus(400)
         return
     }
+
 
     for (const elem of groups) {
         try {
