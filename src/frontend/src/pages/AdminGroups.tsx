@@ -11,6 +11,7 @@ import {cancelButtonColor, confirmButtonColor} from "../utils/utils";
 
 axios.defaults.withCredentials = true
 
+
 function AdminGroups() {
     const { data, isLoading, error } = useQuery({
             queryKey: ['admingroups'],
@@ -154,7 +155,7 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
         }
 
         const response = await axios.delete(
-            `http://localhost:5000/api/admingroups/`,
+            `http://localhost:5000/api/v1/admingroups/`,
             {
                 data: { id: group.GroupID }
             }
@@ -240,12 +241,13 @@ function SortableGroupRow({id, row, index, onInputChange, onRowDelete, setAdminG
         style={{...style}}
         {...attributes}
     >
-        <td {...listeners}>
+        <td>
             <input
                 className="steam-id-input"
                 value={row.GroupName}
                 placeholder="Enter Group Name"
                 onChange={(e) => onInputChange(index, e)}
+                required={true}
             />
         </td>
         <td>
