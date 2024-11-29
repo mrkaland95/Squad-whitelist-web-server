@@ -1,24 +1,30 @@
-
+import React from "react";
 
 
 function Sidebar() {
+    const [fullCollapse, setFullCollapse] = React.useState(false);
+    const [userCollapse, setUserCollapse] = React.useState(false);
+
+
     return (
         <div className={"sidebar-div"}>
             <h2>Options</h2>
-            <ul>
-                <li>
-                    <div>TODO MANAGE USER DROPDOWN HERE</div>
-                </li>
-                <li>
-                    <a href={"/profile"}>Profile</a>
-                </li>
-                <li>
-                    <a href={"/user"}>User</a>
-                </li>
-                <li>
-                    <a href={"/whitelist"}>Whitelist</a>
-                </li>
-            </ul>
+            <div className={"sidebar-users-div"}>
+                <ul>
+                    <li>
+                        <div>TODO MANAGE USER DROPDOWN HERE</div>
+                    </li>
+                    <li>
+                        <a href={"/profile"}>Profile</a>
+                    </li>
+                    <li>
+                        <a href={"/user"}>User</a>
+                    </li>
+                    <li>
+                        <a href={"/whitelist"}>Whitelist</a>
+                    </li>
+                </ul>
+            </div>
             <h3>Admin Dashboard</h3>
             <ul>
                 <li>

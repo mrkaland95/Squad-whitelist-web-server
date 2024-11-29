@@ -3,7 +3,7 @@ import session from 'express-session'
 import env from './load-env'
 import {loadRoutes, loadRoutes2} from "./utils/utils";
 import path from "path";
-import mainRouter from "./routes/main";
+import mainRouter, {loggingMiddleware} from "./routes/main";
 import MongoStore from "connect-mongo";
 import cors from 'cors';
 import {Logger, LoggingLevel} from "./logger";
@@ -32,6 +32,8 @@ app.use(cors({
     credentials: true
 }))
 
+app.use(loggingMiddleware)
+
 // TODO add logging level from .env file
 const logger = new Logger(LoggingLevel.INFO, true)
 
@@ -40,17 +42,17 @@ async function webServerStart() {
 
     const routes = loadRoutes2(routesPath)
 
+
     logger.debug('Loading main router...')
     app.use(mainRouter)
+
 
     logger.debug('Loading routers...')
     for (const route of routes) {
         logger.debug(`Loading base route, ${route.baseRoute}, route name: ${route.routeName}`)
         const baseRoute = `${route.baseRoute}/${route.routeName}`
-        logger.debug(baseRoute)
         app.use(baseRoute, route.router)
     }
-
 
     app.listen(env.webPort, () => {
         logger.info(`Web server up and running on port: ${env.webPort}`)

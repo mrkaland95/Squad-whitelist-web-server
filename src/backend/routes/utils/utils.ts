@@ -14,8 +14,6 @@ import {defaultLogger, Logger} from "../../logger";
  * @param redirect_URI {string}
  */
 export async function requestAccessToken(code: string, client_id: string, client_secret: string, redirect_URI: string): Promise<accessTokenRequestData> {
-    // TODO take this is as a value from the .env file.
-    // let redirectURI = `http://localhost:5000/api/login/`
 
     const body = new URLSearchParams({
         client_id: client_id,
@@ -25,7 +23,6 @@ export async function requestAccessToken(code: string, client_id: string, client
         redirect_uri: redirect_URI,
         scope: 'identify'
     })
-
 
     const oAuthParams = {
         method: 'POST',
@@ -37,6 +34,9 @@ export async function requestAccessToken(code: string, client_id: string, client
 
     const oAuthResponse = await fetch('https://discord.com/api/oauth2/token', oAuthParams);
     const oAuthResponseJSON = await oAuthResponse.json()
+
+    // if (oAuthResponseJSON.status !== 200) {}
+
     return {
         statusCode: oAuthResponse.status,
         body: oAuthResponseJSON
@@ -106,16 +106,11 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
 }
 
 
-
-
-
-
-
-
-
 export interface accessTokenRequestData {
     statusCode: number
-    body: accessTokenRequestSuccess | accessTokenRequestFail
+    body: accessTokenRequestSuccess
+        | accessTokenRequestFail
+        | any
 }
 
 export type accessTokenRequestSuccess = {
@@ -125,7 +120,6 @@ export type accessTokenRequestSuccess = {
     refresh_token: string,
     scope: string
 }
-
 
 export type accessTokenRequestFail = {
     error: string,
