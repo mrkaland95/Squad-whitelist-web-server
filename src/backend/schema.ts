@@ -80,11 +80,14 @@ export interface ILog extends Document {
     MessageType?: string,
 }
 
-
-export interface IDiscordRole extends Document {
+export interface DiscordRole {
     RoleID: string,
     RoleName: string,
     GuildID: string
+}
+
+
+export interface IDiscordRole extends DiscordRole, Document {
 }
 
 export interface IAPIKey extends Document {
@@ -147,8 +150,8 @@ const discordUserSchema = new mongoose.Schema<IDiscordUser>({
 
 
 const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
-    GroupName: { type: String, unique: true, required: true },
-    GroupID: { type: String, unique: true, required: true },
+    GroupName: { type: String, required: true },
+    GroupID: { type: String, required: true },
     Permissions: { type: [String], required: true, enum: Object.values(InGameAdminPermissions) },
     Enabled: { type: Boolean, required: true, default: true },
     // I.e. all the user's whitelist slots will only get used for a list if it contains this group.
@@ -162,7 +165,7 @@ const adminGroupsSchema = new mongoose.Schema<IAdminGroup>({
 const inGameRoleSchema = new mongoose.Schema<IPrivilegedRole>({
     RoleID: { type: String, required: true, unique: true},
     RoleName: { type: String, required: true },
-    AdminGroup: { type: adminGroupsSchema, required: false},
+    AdminGroup: { type: adminGroupsSchema, required: false },
     ActiveDays: {
         type: [Number], required: true,
         validate: {
@@ -207,8 +210,8 @@ const loggingSchema = new mongoose.Schema<ILog>({
 )
 
 
-export const DiscordUsersDB = mongoose.model('Users', discordUserSchema)
-export const RolesDB = mongoose.model('Roles', inGameRoleSchema)
+export const DiscordUsersDB = mongoose.model('DiscordUsers', discordUserSchema)
+export const RolesDB = mongoose.model('PrivilegedRoles', inGameRoleSchema)
 export const AdminGroupsDB = mongoose.model('AdminGroups', adminGroupsSchema)
 export const APIKeysDB = mongoose.model('APIKeys', apiSchema)
 export const LoggingDB = mongoose.model('Logs', loggingSchema)
@@ -218,7 +221,7 @@ export const ListsDB = mongoose.model('Lists', listSchema)
 export async function initializeWhitelistGroup() {
     try {
         defaultLogger.debug(`Initializing "whitelist" group.`)
-        const whitelistGroup = await AdminGroupsDB.findOneAndUpdate({
+        await AdminGroupsDB.findOneAndUpdate({
             GroupName: 'Whitelist'
         }, {
             GroupID: randomUUID(),
