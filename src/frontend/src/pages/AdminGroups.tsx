@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import React, {useEffect, useState} from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {arrayMove, SortableContext, useSortable} from "@dnd-kit/sortable";
@@ -7,6 +7,7 @@ import {closestCenter, DndContext} from "@dnd-kit/core";
 import {CSS} from "@dnd-kit/utilities";
 import {getAdminGroups, postAdminGroups} from "../utils/fetch";
 import {cancelButtonColor, confirmButtonColor} from "../utils/utils";
+import ToggleButton from "../components/Toggle-Button";
 
 
 axios.defaults.withCredentials = true
@@ -60,15 +61,16 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
 
     async function onSubmitGroup(e: any) {
         const res = await Swal.fire({
-          title: 'Submit groups',
-          text: `Are you sure you want to submit groups?`,
-          icon: "question",
-          showCancelButton: true,
-          cancelButtonText: 'CANCEL',
-          cancelButtonColor: cancelButtonColor,
+            title: 'Are you sure you want to submit groups?',
+            text: `This action is permanent`,
+            icon: "warning",
+            showCancelButton: true,
+            cancelButtonText: 'CANCEL',
+            cancelButtonColor: cancelButtonColor,
             confirmButtonColor: confirmButtonColor,
             confirmButtonText: 'SUBMIT',
-          backdrop: true
+            focusConfirm: true,
+            backdrop: true
         })
 
         if (!res.isConfirmed) return;
@@ -204,21 +206,19 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
               </thead>
               <tbody>
               <WhitelistGroup></WhitelistGroup>
-                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={adminGroupRows.map((group) => group.GroupID)}>
-                        {adminGroupRows.map((group, index) => (
-                            <SortableGroupRow
-                                key={group.GroupID || index}
-                                id={group.GroupID || index.toString()}
-                                row={group}
-                                index={index}
-                                onInputChange={onInputChange}
-                                onRowDelete={onRowDelete}
-                                setAdminGroupRows={setAdminGroupRows}
-                            />
-                        ))}
-                    </SortableContext>
-                </DndContext>
+                <SortableContext items={adminGroupRows.map((group) => group.GroupID)}>
+                    {adminGroupRows.map((group, index) => (
+                        <SortableGroupRow
+                            key={group.GroupID || index}
+                            id={group.GroupID || index.toString()}
+                            row={group}
+                            index={index}
+                            onInputChange={onInputChange}
+                            onRowDelete={onRowDelete}
+                            setAdminGroupRows={setAdminGroupRows}
+                        />
+                    ))}
+                </SortableContext>
             </tbody>
         </table>
     <ButtonRow onAddGroup={onAddGroup}></ButtonRow>
@@ -228,19 +228,24 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
 }
 
 
-function SortableGroupRow({id, row, index, onInputChange, onRowDelete, setAdminGroupRows}: any) {
-    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id});
+function SortableGroupRow({row, index, onInputChange, onRowDelete, setAdminGroupRows}: any) {
+    function onGroupToggle(e: ChangeEvent<HTMLInputElement>, permission: string) {
+        if (e.target.checked && !row.Permissions.includes(permission)) {
+            row.Permissions.push(permission);
+        } else {
+            row.Permissions = row.Permissions.filter((value: string) => value !== permission);
+        }
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
+        setAdminGroupRows((prev: any) => {
+            const updated = [...prev];
+            updated[index].Permissions = row.Permissions;
+            return updated;
+        });
+    }
+
+
     return (
-    <tr key={row.GroupID || index.toString()}
-        ref={setNodeRef}
-        style={{...style}}
-        {...attributes}
-    >
+    <tr key={row.GroupID || index.toString()}>
         <td>
             <input
                 className="steam-id-input"
@@ -254,30 +259,23 @@ function SortableGroupRow({id, row, index, onInputChange, onRowDelete, setAdminG
             <div className={"admin-group-container permissions-wrapper"}>
                 {Array.from(ALL_POSSIBLE_PERMISSIONS_MAP.keys()).map((permission: string) => (
                     <div>
-                        <input type={"checkbox"}
-                               id={`${index}-${permission}`}
-                               key={permission}
-                               title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
-                               checked={row.Permissions.includes(permission)}
-                               onChange={(e) => {
-                                   if (e.target.checked) {
-                                       if (!row.Permissions.includes(permission)) {
-                                           row.Permissions.push(permission);
-                                       }
-                                   } else {
-                                       row.Permissions = row.Permissions.filter((value: string) => value !== permission);
-                                   }
-
-                                   setAdminGroupRows((prev: any) => {
-                                       const updated = [...prev];
-                                       updated[index].Permissions = row.Permissions;
-                                       return updated;
-                                   });
-                               }}
+                        <div style={{display: "flex", justifyContent: "left", alignItems: "center"}}>
+                        <ToggleButton
+                            checked={row.Permissions.includes(permission)}
+                            onToggle={(e) => onGroupToggle(e, permission)}
+                            id={`${index.toString()}_${permission}`}
+                            title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
                         />
-                        <label style={{paddingLeft: '0.25rem'}}
-                           htmlFor={`${index}-${permission}`}>{permission}</label>
-                        <p style={{fontSize: '0.8rem'}}><em>
+
+                        <label
+                            style={{paddingLeft: '0.35rem'}}
+                            htmlFor={`${index.toString()}_${permission}`}
+                            title={ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}>
+                            {permission}
+                        </label>
+                        </div>
+
+                        <p style={{fontSize: '0.7rem'}}><em>
                             {ALL_POSSIBLE_PERMISSIONS_MAP.get(permission)}
                         </em></p>
                     </div>
@@ -285,20 +283,18 @@ function SortableGroupRow({id, row, index, onInputChange, onRowDelete, setAdminG
             </div>
         </td>
         <td>
-            <input
-                type="checkbox"
-                checked={row.Enabled}
-                onChange={(event) => {
-                    setAdminGroupRows((prev: any) => {
-                        const updated = [...prev];
-                        updated[index].Enabled = event.target.checked
-                        return updated;
-                    });
-                }}
-            />
+        <ToggleButton
+            title={"Whether the group is enabled"}
+            checked={row.Enabled} onToggle={(e)=> {
+            setAdminGroupRows((prev: any) => {
+                const updated = [...prev];
+                updated[index].Enabled = e.target.checked
+                return updated;
+            })
+        }}/>
         </td>
         <td>
-            <button type={"button"} onClick={() => onRowDelete(row)}>
+            <button className={"delete-button"} type={"button"} onClick={() => onRowDelete(row)}>
                 DELETE
             </button>
         </td>
@@ -318,10 +314,19 @@ function WhitelistGroup() {
             </td>
             <td>
                 <div className={"admin-group-container permissions-wrapper"}>
-                    <input id={"whitelist-checkbox"} type={"checkbox"} checked={true} disabled={true}/>
-                    <label htmlFor={"whitelist-checkbox"} style={{paddingLeft: '0.25rem'}}>
-                        reserve
-                    </label>
+                    <div style={{display: "flex", alignItems: "center"}}>
+                        <ToggleButton
+                            checked={true}
+                            onToggle={(e) => e.preventDefault()}
+                            id={"whitelist-checkbox"}
+                            disabled={true}
+                        />
+
+                        <label htmlFor={"whitelist-checkbox"} style={{paddingLeft: '0.25rem'}}>
+                            reserve
+                        </label>
+                    </div>
+
                 </div>
             </td>
             <td><input type={"checkbox"} disabled={true} checked={true}/></td>
@@ -364,11 +369,15 @@ const ALL_POSSIBLE_PERMISSIONS_MAP = new Map([
 /**
  * Interface that describes a group of in-game permissions.
  */
-export interface IAdminGroup extends Document {
+export interface IAdminGroup {
+    _id?: string
+    GroupID: string,
     GroupName: string,
-    Permissions: InGameAdminPermissions[],
+    Permissions: string[]
     Enabled: boolean,
     IsWhitelistGroup: boolean
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 
@@ -381,7 +390,6 @@ export type AdminGroupRow = {
     _id?: string
     GroupID: string,
     GroupName: string,
-    // ActivePermissions: InGameAdminPermissions[]
     Permissions: string[]
     Enabled: boolean,
     IsWhitelistGroup: boolean
