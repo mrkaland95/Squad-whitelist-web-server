@@ -1,4 +1,14 @@
-import {DiscordUsersDB, IAdminGroup, IDiscordUser, IListEndpoint, IPrivilegedRole, ListsDB, RolesDB} from "./schema";
+import {
+    DiscordRole,
+    DiscordUsersDB,
+    IAdminGroup,
+    IDiscordRole,
+    IDiscordUser,
+    IListEndpoint,
+    IPrivilegedRole,
+    ListsDB,
+    RolesDB
+} from "./schema";
 import {Client, GatewayIntentBits, GuildMember} from "discord.js";
 import {Logger, LoggingLevel} from "./logger";
 import env from "./load-env";
@@ -12,6 +22,7 @@ const logger = new Logger(LoggingLevel.DEBUG)
 
 let usersCache: Map<string, IDiscordUser> = new Map()
 let listsCache: Map<string, string> = new Map()
+export let allDiscordRolesCache: DiscordRole[] = []
 
 export const discordClient = new Client({
     intents: [
@@ -232,6 +243,31 @@ async function retrieveMembersFromGuild(guildID: string) {
 
     return discordMembers
 }
+
+
+export async function getDiscordRoles(guildID: string) {
+    let discordRoles: DiscordRole[] = []
+    let guild = await discordClient.guilds.fetch(guildID)
+    try {
+        const roles = await guild.roles.fetch()
+        for (const role of roles.values()) {
+            discordRoles.push({
+                RoleID: role.id,
+                RoleName: role.name,
+                GuildID: role.guild.id
+            })
+        }
+    } catch (e) {
+        logger.error(`Discord client was unable to retrieve guild.`)
+    }
+    return discordRoles
+}
+
+export async function refreshDiscordRoles(guildID: string): Promise<DiscordRole[]> {
+    allDiscordRolesCache = await getDiscordRoles(guildID)
+    return allDiscordRolesCache
+}
+
 
 
 // Meant to be a rough analogue of the "performScrub" function of the old whitelist server.
