@@ -46,7 +46,7 @@ export function goToAuthenticate() {
     localStorage.setItem('oauth-state', randomString)
 
     // TODO remove this hardcode and take it in as an .env
-    const redirectURI = process.env.DISCORD_REDIRECT_URI || "https://discord.com/oauth2/authorize?client_id=1093586781703786526&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Flogin%2F&scope=identify"
+    const redirectURI = process.env.DISCORD_REDIRECT_URI || "https://discord.com/oauth2/authorize?client_id=1093586781703786526&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Fv1%2Fauth%2Flogin&scope=identify"
 
     window.location.href = redirectURI;
 }

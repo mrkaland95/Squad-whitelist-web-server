@@ -1,13 +1,16 @@
 :root {
   --primary-color: #2c333d;
   --backup-color: #2c333d;
-  --nav-background-color: rgba(38, 49, 61, 0.84);
+  --nav-background-color: rgba(35, 47, 58, 0.84);
   /*--nav-background-color: #0d1724;*/
   --secondary-color: #423451;
   --outline-color: rgba(68, 74, 91, 0.65);
   --default-box-shadow: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);
+  --error-color: #d9534f;
+  --success-color: rgba(40, 241, 9, 0.93);
+  --text-color: #FFFFFF;
   --font-size-large: 1.5rem;
-  --spacing: 16px;
+  --spacing: 1rem;
   --primary-font-size: 1rem;
 }
 
@@ -22,14 +25,36 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.app-container {
-  background-color: var(--primary-color);
-}
-
 .body {
   min-height: 100vh;
   display: flex;
 }
+
+.app-container {
+  background-color: var(--primary-color);
+}
+
+
+.content-container {
+  display: flex;
+  justify-content: center;
+  padding: 8rem 2rem;
+  color: #d9d9d9;
+  width: 100%;
+  overflow: auto;
+  /*overflow-x: scroll;*/
+}
+
+.content-container table {
+  width: 100%;
+}
+
+
+.content-container p {
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+
 
 .nav-container {
   background-color: var(--nav-background-color);
@@ -50,18 +75,23 @@
 }
 
 .sidebar-div {
-  /*width: 200px;*/
-  min-width: 150px;
-  max-width: 40%;
+  min-width: 10rem;
+  max-width: 18rem;
   background-color: var(--nav-background-color);
   border-right: 0.05rem solid #ffffff;
-  /*margin-right: 5%;*/
-  /*margin-right: auto;*/
-  /*padding-top: 0.5rem;*/
-  /*border: #466d95;*/
-  /*border-spacing: 10px;*/
+  transition: width 0.3s ease;
   padding: 1.5rem;
   color: #ffffff;
+}
+
+.sidebar-div .elements {
+
+}
+
+
+.sidebar-div a {
+  text-decoration: none;
+  color: #FFFFFF
 }
 
 .sidebar-div ul {
@@ -71,24 +101,13 @@
     padding: 8px 0;
 }
 
-.content-container {
-  display: flex;
-  justify-content: center;
-  /*padding: 2rem 2rem;*/
-  padding: 8rem 2rem;
 
-  /*margin-inline: auto;*/
-  /*padding-inline: 2rem 2rem;*/
-  /*background-color: #0d0f11;*/
-  color: #d9d9d9;
-  /*min-height: 100vh;*/
-  min-width: 80vw;
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-.content-container p {
-  padding-top: 0.1rem;
-  padding-bottom: 0.1rem;
-}
 
 .user-container {
   max-width: 50%;
@@ -123,6 +142,13 @@
   color: rgba(130, 140, 169, 0.65);
 }
 
+
+.roles-edit-container th {
+  text-align: left;
+  /*alig*/
+}
+
+
 .whitelist-container .row-box {
   padding: 0.1rem;
   display: flex;
@@ -147,7 +173,7 @@
 }
 
 #admin-groups-table tr {
-  padding: 2rem;
+  padding: 5rem;
 }
 
 .admin-group-container .permissions-wrapper {
@@ -163,13 +189,18 @@
   margin: 0.5rem 2.5rem;
 }
 
-admin-group-container .table-wrapper {
+.admin-group-container .table-wrapper {
   width: 100%;
 }
 
-.table-edit-container {
-  display: flex;
+.table-edit-container table {
+  overflow-x: scroll;
 }
+
+.table-edit-container th {
+  text-align: left;
+}
+
 
 #admin-groups-table {
   width: 100%;
@@ -181,13 +212,59 @@ admin-group-container .table-wrapper {
   /*padding-inline: 1rem;*/
 }
 
-#admin-groups-table th, td {
-  padding: 1rem;
-}
+
+/*.list-endpoint-table-wrapper {*/
+/*  overflow-x: auto;*/
+/*  border: 1px solid transparent;*/
+/*  box-shadow: 0.1rem 0.1rem var(--default-box-shadow);*/
+/*  background-color: rgba(58, 65, 73, 0.76);*/
+/*  border-radius: 5px;*/
+/*  margin: 1rem auto;*/
+/*  padding: 1rem 3rem;*/
+/*}*/
+
+/*.list-endpoint-table-wrapper table {*/
+/*  border-collapse: collapse;*/
+/*}*/
+
+/*.list-endpoint-div th, td {*/
+/*  text-align: left;*/
+/*  padding: 0.5rem;*/
+/*}*/
+
+/*#list-endpoint-div tr:hover {*/
+/*  background-color: rgba(52, 54, 63, 0.76);*/
+/* !*filter: brightness(120%);*!*/
+/*}*/
+
+/*#list-endpoint-div tr:nth-of-type(2n) {*/
+/*  background: hsl(0 0% 0% / 0.1);*/
+/*}*/
+
+
+/*#list-endpoint-div thead {*/
+/*  border-bottom: 1px solid transparent;*/
+/*}*/
+
+/*#list-endpoint-div th {*/
+/*  border: 2px solid var(--primary-color);*/
+/*}*/
+
+/*.list-endpoint-buttons-wrapper {*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*  width: 100%;*/
+/*  gap: 1rem;*/
+/*}*/
+
+/*#list-endpoint-div td {*/
+/*  padding-right: 0.5rem;*/
+/*}*/
 
 #admin-groups-table th {
   background: hsla(240, 22%, 14%, 0.5);
   text-align: left;
+  padding: 1rem;
 }
 
 #admin-groups-table tr:nth-of-type(2n) {
@@ -195,12 +272,10 @@ admin-group-container .table-wrapper {
 }
 
 
-
 .active-days-container {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
   background-color: var(--outline-color);
   box-shadow: var(--default-box-shadow);
+  /*margin: 0.8rem;*/
   padding: 10px;
   display: inline-block;
   border-radius: 5px;
@@ -216,8 +291,6 @@ admin-group-container .table-wrapper {
   font-weight: bold;
   background-color: #242b36;
 }
-
-
 
 
 .default-button {
@@ -245,3 +318,86 @@ admin-group-container .table-wrapper {
   box-shadow: 0 0 10px rgb(0,0,0);
 }
 
+
+/* The switch - the box around the slider */
+.switch {
+  font-size: 0.8rem;
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  border: 2px solid #414141;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.3em;
+    width: 1.3em;
+    left: 0.2em;
+    bottom: 0.2em;
+    background-color: white;
+    border-radius: inherit;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.switch input:checked + .slider {
+  /*background-color: #4d7045;*/
+    /*box-shadow: 0 0 20px rgba(9, 117, 241, 0.8);*/
+    border: 2px solid #09f115;
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(1.5em);
+}
+
+.delete-button {
+  background-color: #651e1e;
+  color: #d7d7d7;
+  padding: 0.25rem 1.7rem;
+  /*font-family: sans-serif;*/
+  border: 2px solid #0e070c;
+  border-radius: 0.4rem;
+  box-shadow: var(--default-box-shadow);
+  transition: filter 0.2s;
+  font-size: 0.8rem;
+}
+
+.delete-button:hover, .delete-button:focus {
+  filter: brightness(120%);
+  border: 2px solid #ffffff;
+  /*box-shadow: 0.2rem 0.2rem rgba(0, 0, 0, 0.3);*/
+  background-color: #571e1e;
+  /*background-color: rgba(130, 140, 169, 0.65);*/
+}
+
+.default-dropdown {
+  /*display: none;*/
+  /*position: absolute;*/
+  background-color: var(--outline-color);
+  position: sticky;
+  /*top: -1rem;*/
+  overflow: auto;
+  width: 100%;
+  max-height: 20rem;
+  z-index: 1;
+}
+
+
+/*.delete-button: d*/

@@ -15,10 +15,14 @@ function User() {
         queryFn: getUserSteamID,
     });
 
+    // const { data, isLoading, error } = useQuery({
+    //     queryKey: ['userdata'],
+    //     queryFn: fetchUserData,
+    // });
+    //
 
 
     if (isLoading) return <p>Loading...</p>;
-    // if (error) return <p>Error: {error.message}</p>;
     if (error) return <p>Unable to retrieve user</p>;
     if (!data) return <p>Something went wrong when loading your whitelist data</p>
 
@@ -91,7 +95,7 @@ function UserForm({userData}: any) {
                             setUser(newUser)
                         }}
 
-                        placeholder={"SteamID"}
+                        placeholder={"Steam ID"}
                         maxLength={17}
                         required={true}
                         style={{padding: '0.5rem', marginRight: '0.5rem'}}

@@ -25,7 +25,7 @@ function AdminGroups() {
 
     return (
     <div className={"admin-group-container"}>
-        <h1 style={{paddingBottom: '1rem'}}>ADMIN GROUP MANAGEMENT</h1>
+        <h1 style={{paddingBottom: '1rem'}}>ADMIN PERMISSION GROUP MANAGEMENT</h1>
         <AdminGroupForm adminGroups={data}></AdminGroupForm>
     </div>
     )
@@ -123,16 +123,6 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
         }
     }
 
-
-    function onInputChange(index: number, e: any) {
-        const newGroupName = e.target.value;
-        setAdminGroupRows((prev) => {
-            const updated = [...prev];
-            updated[index].GroupName = newGroupName;
-            return updated;
-        });
-    }
-
     async function onRowDelete(group: AdminGroupRow) {
         const result = await Swal.fire({
             title: 'Delete admin group',
@@ -179,15 +169,13 @@ function AdminGroupForm({adminGroups}: AdminGroupFormProps) {
         })
     }
 
-    function handleDragEnd(event: any) {
-        const { active, over } = event;
-
-        if (active.id !== over.id) {
-            const oldIndex = adminGroupRows.findIndex(row => row.GroupID === active.id);
-            const newIndex = adminGroupRows.findIndex(row => row.GroupID === over.id);
-
-            setAdminGroupRows((rows) => arrayMove(rows, oldIndex, newIndex));
-        }
+    function onInputChange(index: number, e: any) {
+        const newGroupName = e.target.value;
+        setAdminGroupRows((prev) => {
+            const updated = [...prev];
+            updated[index].GroupName = newGroupName;
+            return updated;
+        });
     }
 
     return (

@@ -1,6 +1,6 @@
-import React from 'react';
-import logo from '../logo.svg';
+import React, {useState} from 'react';
 import '../css/styles.css';
+import '../css/table.css'
 import DiscordAuthentication from "./Login";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -12,17 +12,24 @@ import Whitelist from "../pages/Whitelist";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import AdminGroups from "../pages/AdminGroups";
 import RoleEdit from "../pages/RoleEdit";
+import ListEdit from "../pages/ListEdit";
 
 
 const queryClient = new QueryClient();
 
 function App() {
-  return (
-  <QueryClientProvider client={queryClient}>
+    const [sideBarOpen, setSideBarOpen] = useState(true);
+
+    function toggleSideBar() {
+        setSideBarOpen(!sideBarOpen);
+    }
+
+    return (
+    <QueryClientProvider client={queryClient}>
     <div className="app-container">
-        <Navbar></Navbar>
+        <Navbar onToggleSideBar={toggleSideBar}></Navbar>
         <div className="body">
-            <Sidebar></Sidebar>
+            {sideBarOpen && <Sidebar></Sidebar>}
             <div className="content-container">
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -31,12 +38,13 @@ function App() {
                     <Route path="/whitelist" element={<Whitelist />} />
                     <Route path="/admingroups" element={<AdminGroups />} />
                     <Route path="/rolesedit" element={<RoleEdit />} />
+                    <Route path="/listsedit" element={<ListEdit />} />
                 </Routes>
             </div>
         </div>
     </div>
-  </QueryClientProvider>
-  );
+    </QueryClientProvider>
+    );
 }
 
 export default App;

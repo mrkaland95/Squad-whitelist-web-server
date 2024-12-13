@@ -63,9 +63,10 @@ export interface AdminGroup {
 }
 
 
-export interface Lists {
+export interface ListEndpoint {
     ListName: string,
-    AdminGroups: [AdminGroup],
+    ListID: string,
+    AdminGroups: AdminGroup[],
     AllRolesEnabled: boolean,
     UseWhitelistGroup: boolean,
     Enabled: boolean

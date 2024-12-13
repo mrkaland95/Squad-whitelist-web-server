@@ -4,6 +4,7 @@ import {WhitelistResponseData, WhitelistRow} from "../pages/Whitelist";
 import {IDiscordUser} from "../pages/User";
 import {responseData} from "../pages/Profile";
 import {IPrivilegedRole} from "../pages/RoleEdit";
+import {ListEndpoint} from "../../../shared-types/types";
 
 
 const baseURL = "http://localhost:5000";
@@ -69,7 +70,6 @@ export async function postUserSteamID(steamID: string) {
     return result
 }
 
-
 export async function getUserSteamID() {
     return axios.get(`${baseURL}/api/v1/user/userid`)
 }
@@ -103,6 +103,17 @@ export async function getListEndpoints() {
     }
 
     return res.data
+}
+
+export async function postListEndpoints(lists: ListEndpoint[]) {
+    const url = `${baseURL}/api/v1/listedit`
+    const result = await axios.post(url, lists)
+
+    if (result.status != 200) {
+        throw new Error("Unable to post list data to server.")
+    }
+
+    return result
 }
 
 

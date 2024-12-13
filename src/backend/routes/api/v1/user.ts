@@ -5,6 +5,7 @@ import {DiscordUsersDB, RolesDB} from "../../../schema";
 import {defaultLogger} from "../../../logger";
 import {getPlayerSummarySteam} from "../../../utils/steamAPI";
 import {WhitelistResponseData} from "../../main";
+import env from "../../../load-env";
 
 const router = Router()
 
@@ -50,6 +51,52 @@ router.post('/userid', isAuthenticated, async (req, res) => {
     }
 
     res.sendStatus(200)
+})
+
+
+router.get('userinfo', isAuthenticated, async (req, res) => {
+    defaultLogger.debug('Received user info request...', req.originalUrl)
+
+    if (!req.session.discordUser?.id) {
+        defaultLogger.debug(`Received request with no session.`)
+        res.status(401).send('Unauthenticated User')
+        return
+    }
+
+    const userDBData = GetUsersFromCacheMap(true).get(req.session.discordUser.id)
+    const rolesDBData = await RolesDB.find()
+
+    if (!userDBData) {
+        defaultLogger.debug(`Not able to find user with stored session ${req.session.discordUser.global_name} in DB`)
+        res.status(401).send('Unable to find user in the servers systems.')
+        return
+    }
+
+    const validRoles = rolesDBData.filter(role => {
+        return userDBData.Roles.includes(role.RoleID)
+    })
+
+    const isAdmin = userDBData.Roles.some(roleID => {
+        return env.discordRolesAuthorizedForAdmin.includes(roleID)
+    })
+
+    const whitelistProps = processWhitelistProps(userDBData, validRoles)
+
+    const responseData = {
+        isAuthenticated: true,
+        isAdmin: isAdmin,
+        discordUserName: req.session.discordUser.username,
+        discordGlobalName: req.session.discordUser.global_name,
+        discordAvatar: req.session.discordUser.avatar,
+        userPrivilegedDiscordRoles: validRoles,
+        userSteamID: userDBData.UserID64,
+        whitelistSlots: whitelistProps.WhitelistSlots,
+        whitelistActiveDays: whitelistProps.WhitelistActiveDays,
+        whitelistedSteam64IDs: userDBData.Whitelist64IDs,
+
+    }
+    defaultLogger.debug(`Sending profile response data...`)
+    res.status(200).json(responseData)
 })
 
 

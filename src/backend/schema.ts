@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 import { Document } from "mongoose";
 import {defaultLogger} from "./logger";
 import {randomUUID} from "node:crypto";
+import {ListEndpoint} from "../shared-types/types";
 
 
 /*
@@ -101,13 +102,7 @@ AdminGroups: The in game admin groups that a list will use.
 
 // TODO this may have to be expanded in the future.
  */
-export interface IListEndpoint extends Document {
-    ListName: string,
-    AdminGroups: [IAdminGroup],
-    AllRolesEnabled: boolean,
-    UseWhitelistGroup: boolean,
-    Enabled: boolean
-}
+export interface IListEndpoint extends ListEndpoint, Document {}
 
 
 /**
@@ -191,6 +186,7 @@ const allServerRolesSchema = new mongoose.Schema<IDiscordRole>({
 
 const listSchema = new mongoose.Schema<IListEndpoint>({
     ListName: { type: String, required: true, unique: true },
+    ListID: { type: String, required: true, unique: true },
     AdminGroups: { type: [adminGroupsSchema], required: true, default: [] },
     // I.e. if all users that has ANY role mapped to the admin group, should be enabled for this list.
     AllRolesEnabled: { type: Boolean, required: true, default: true },

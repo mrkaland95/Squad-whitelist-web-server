@@ -24,3 +24,29 @@ export enum WeekDays {
     Friday = 5,
     Saturday = 6
 }
+
+
+export const daysMap = new Map([
+    [0, 'Sunday'],
+    [1, 'Monday'],
+    [2, 'Tuesday'],
+    [3, 'Wednesday'],
+    [4, 'Thursday'],
+    [5, 'Friday'],
+    [6, 'Saturday'],
+])
+
+export const daysMapShort = new Map([
+    [0, 'Sun'],
+    [1, 'Mon'],
+    [2, 'Tues'],
+    [3, 'Wed'],
+    [4, 'Thur'],
+    [5, 'Fri'],
+    [6, 'Sat'],
+])
+
+
+export const modalBGColor = "#000"
+export const cancelButtonColor = "#9d0d0d"
+export const confirmButtonColor = "#1939b7"

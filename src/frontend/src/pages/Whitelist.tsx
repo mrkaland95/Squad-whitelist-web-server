@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, {useEffect, useState} from "react";
 // import {IPrivilegedRole} from "../../../../dist/backend/schema";
 import Swal from "sweetalert2";
-import {steamID64Regex, WeekDays} from "../utils/utils";
+import {daysMap, steamID64Regex, WeekDays} from "../utils/utils";
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -17,7 +17,6 @@ function Whitelist() {
         queryFn: getUsersWhitelist,
     });
 
-    console.log(error)
 
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
@@ -28,20 +27,23 @@ function Whitelist() {
     })
 
     return (
-    <>
+        <>
         <div className={"whitelist-container"}>
             <h1>
                 WHITELIST MANAGEMENT
             </h1>
-            <h3>
+            <h3 style={{padding: '1rem 0rem'}}>
                This page is used for managing your whitelist slots for other people
             </h3>
+            <hr style={{marginBottom: '1rem'}} />
+            {/*<p style={{marginBottom: '1rem'}}>Some roles only get whitelist on certain days</p>*/}
             <div className={"active-days-container"}>
-                <p><em>
-                    Days that your whitelist slots are active
-                </em></p>
+                    <p><em>
+                        Some discord roles may only get whitelist on certain days<br/>
+                        For you, they are the following:
+                    </em></p>
                 {activeDaysList.map((day) => (
-                    <p style={{}}><b>{day}</b></p>
+                    <p style={{padding: '0.3rem 0rem'}}><b>{day}</b></p>
                 ))}
             </div>
             <p style={{paddingBottom: '10px', paddingTop: '10px'}}>
@@ -107,8 +109,8 @@ function WhiteListForms({whitelist, whitelistSlots}: WhitelistFormProps) {
           <form onSubmit={handleSubmit}>
           {whitelistRows.map((row, index) => (
             <SortableRow
-              key={row.steamID || index}
-              id={row.steamID || index.toString()}
+              key={index.toString()}
+              id={row.steamID}
               row={row}
               index={index}
               onInputChange={handleInputChange}
@@ -116,7 +118,7 @@ function WhiteListForms({whitelist, whitelistSlots}: WhitelistFormProps) {
           ))}
           <div className={"whitelist-container button-wrapper"}>
             <button type={"submit"} style={{ marginTop: '20px' }} className={"default-button"} title={"Submit your steamIDs to our systems"}>
-              Submit
+                Submit
             </button>
             <button type={"button"} style={{ marginTop: '20px'}} className={"default-button"} title={"Validate IDs"}>
                 Validate IDs
@@ -149,12 +151,15 @@ function SortableRow({ id, row, index, onInputChange }: any) {
       </span>
       <input
         type="text"
+        inputMode={"numeric"}
+        pattern={"[0-9]+"}
         value={row.steamID}
         onChange={(e) => onInputChange(index, 'steamID', e.target.value)}
         placeholder={"Enter SteamID"}
         maxLength={17}
         className={"steam-id-input"}
       />
+
       <input
         type="text"
         value={row.name}
@@ -269,16 +274,6 @@ export type WhitelistRow = {
 }
 
 
-
-const daysMap = new Map([
-    [0, 'Sunday'],
-    [1, 'Monday'],
-    [2, 'Tuesday'],
-    [3, 'Wednesday'],
-    [4, 'Thursday'],
-    [5, 'Friday'],
-    [6, 'Saturday'],
-])
 
 
 export default Whitelist

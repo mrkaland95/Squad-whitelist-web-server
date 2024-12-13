@@ -1,13 +1,19 @@
-import React from "react";
+import React, {useState} from "react";
+import ToggleButton from "./Toggle-Button";
 
 
 function Sidebar() {
-    const [fullCollapse, setFullCollapse] = React.useState(false);
-    const [userCollapse, setUserCollapse] = React.useState(false);
+    const [userCollapse, setUserCollapse] = useState(false);
+    const [adminCollapse, setAdminCollapse] = useState(false);
 
+    function toggleAdminDash() {
+        setAdminCollapse(!adminCollapse);
+    }
 
     return (
         <div className={"sidebar-div"}>
+            <div className={"sidebar-div elements"}>
+
             <h2>Options</h2>
             <div className={"sidebar-users-div"}>
                 <ul>
@@ -25,18 +31,20 @@ function Sidebar() {
                     </li>
                 </ul>
             </div>
-            <h3>Admin Dashboard</h3>
+            {/*<h3 onClick={toggleAdminDash}>Admin Dashboard</h3>*/}
+            <button onClick={toggleAdminDash}>Admin Dashboard</button>
             <ul>
                 <li>
                     <a href={"/admingroups"}>Admin Groups</a>
                 </li>
                 <li>
-                    <a href={"/rolesedit"}>Roles</a>
+                    <a href={"/rolesedit"}>Special Roles</a>
                 </li>
                 <li>
-                    <a href={"listsedit"}>Lists</a>
+                    <a href={"/listsedit"}>Lists Endpoints</a>
                 </li>
             </ul>
+            </div>
         </div>
     )
 }

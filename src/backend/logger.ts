@@ -6,8 +6,8 @@ export enum LoggingLevel {
     DEBUG = 0,
     INFO = 1,
     WARNING = 2,
-    ERROR = 3,
-    CRITICAL = 4
+    CRITICAL = 3,
+    ERROR = 4,
 }
 
 
@@ -24,40 +24,40 @@ export class Logger {
 
     debug(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.DEBUG) {
-            const output = this.constructMsg(LoggingLevel.DEBUG)
+            const output = this.#constructMsg(LoggingLevel.DEBUG)
             console.log(output, ...message, ']')
         }
     }
 
     info(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.INFO) {
-            const output = this.constructMsg(LoggingLevel.INFO)
+            const output = this.#constructMsg(LoggingLevel.INFO)
             console.log(output, ...message)
         }
     }
 
     warning(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.WARNING) {
-            const output = this.constructMsg(LoggingLevel.WARNING)
+            const output = this.#constructMsg(LoggingLevel.WARNING)
             console.warn(output, message)
         }
     }
 
     critical(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.CRITICAL) {
-            const output = this.constructMsg(LoggingLevel.CRITICAL)
+            const output = this.#constructMsg(LoggingLevel.CRITICAL)
             console.warn(output, message)
         }
     }
 
     error(...message: any[]) {
         if (this.loggerLevel >= LoggingLevel.ERROR) {
-            const output = this.constructMsg(LoggingLevel.CRITICAL)
+            const output = this.#constructMsg(LoggingLevel.CRITICAL)
             console.error(output, message)
         }
     }
 
-    constructMsg(level: LoggingLevel) {
+    #constructMsg(level: LoggingLevel) {
         const now = new Date()
         let msg = ``
         if (this.timestampEnabled) {

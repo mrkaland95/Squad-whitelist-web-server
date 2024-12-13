@@ -1,9 +1,10 @@
 import '../css/styles.css'
 
 
-function Navbar() {
-    return (<nav className="nav-container">
-        <a href="/" className="site-title">
+function Navbar({onToggleSideBar}: any) {
+    return (
+    <nav className="nav-container">
+        <a href="/" className="site-title" style={{textDecoration: 'none', color: 'white'}}>
             Test Name
         </a>
         <ul>
@@ -14,7 +15,10 @@ function Navbar() {
                 <a href={"/user"}>user</a>
             </li>
         </ul>
-
+        <button onClick={onToggleSideBar}>Collapse</button>
+        <div>
+            <a href={"#"}>Login With Discord</a>
+        </div>
     </nav>)
 }
 

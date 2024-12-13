@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 
 async function fetchUserData(): Promise<responseData> {
-    const response = await fetch("http://localhost:5000/api/auth/userinfo", {
+    const response = await fetch("http://localhost:5000/api/v1/user/userinfo", {
         credentials: "include"
     })
 
@@ -18,14 +18,14 @@ async function fetchUserData(): Promise<responseData> {
 
 function Profile() {
     const { data, isLoading, error } = useQuery({
-        queryKey: ['profile'],
+        queryKey: ['userdata'],
         queryFn: fetchUserData,
     });
 
     // TODO add loading modal here.
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>Error: {error.message}</p>;
-    if (!data) return <p>Something went wrong when loading your profile data.</p>
+    if (!data) return <p>Something went wrong when loading profile data</p>
 
     return(
         <div className={"profile-div"}>
@@ -42,7 +42,7 @@ function Profile() {
 
 
 
-type responseData = {
+export type responseData = {
     isAuthenticated: boolean,
     isAdmin: boolean
     username: string,
