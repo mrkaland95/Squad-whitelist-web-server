@@ -3,8 +3,6 @@ import React, {ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {arrayMove, SortableContext, useSortable} from "@dnd-kit/sortable";
-import {closestCenter, DndContext} from "@dnd-kit/core";
-import {CSS} from "@dnd-kit/utilities";
 import {getAdminGroups, postAdminGroups} from "../utils/fetch";
 import {cancelButtonColor, confirmButtonColor} from "../utils/utils";
 import ToggleButton from "../components/Toggle-Button";

@@ -1,0 +1,20 @@
+.custom-dropdown-wrapper {
+  width: 100%;
+}
+
+.custom-dropdown-button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  color: #FFFFFF;
+  background-color: #1c618f;
+  border: none;
+}
+
+.dropdown-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+

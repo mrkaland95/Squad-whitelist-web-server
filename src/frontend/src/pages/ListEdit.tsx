@@ -5,6 +5,7 @@ import {AdminGroup, ListEndpoint} from "../../../shared-types/types";
 import ToggleButton from "../components/Toggle-Button";
 import Swal from "sweetalert2";
 import {Dropdown, DropdownButton, DropdownToggle} from "react-bootstrap";
+import ExpandableDropdown from "../components/ExpandableDropdown";
 
 
 function ListEdit() {
@@ -207,7 +208,7 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
         </form>
         </div>
         <div className={"list-endpoint-table-wrapper"}>
-            <HelpDropdown></HelpDropdown>
+            <ExpandableDropdown></ExpandableDropdown>
         </div>
         <div style={{display: "flex", justifyContent: "center"}}>
             {/*<div>test</div>*/}
@@ -227,25 +228,6 @@ function CheckEndpoints() {
 }
 
 
-function HelpDropdown() {
-    const [dropDownOpen, setDropDownOpen] = useState(false)
-    return (
-    <div>
-        {/*<h3><em>HELP</em></h3>*/}
-        {/*<hr/>*/}
-    </div>)
-}
-
-function CustomDropdown() {
-    const [dropDownOpen, setDropDownOpen] = useState(false)
-    return (
-    <div>
-        <button className={"custom-dropdown-button"} type={"button"}>
-
-        </button>
-
-    </div>)
-}
 
 
 
