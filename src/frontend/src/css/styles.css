@@ -250,12 +250,6 @@ th {
 /*  border: 2px solid var(--primary-color);*/
 /*}*/
 
-/*.list-endpoint-buttons-wrapper {*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*  width: 100%;*/
-/*  gap: 1rem;*/
-/*}*/
 
 /*#list-endpoint-div td {*/
 /*  padding-right: 0.5rem;*/
@@ -267,7 +261,7 @@ th {
   padding: 1rem;
 }
 
-#admin-groups-table tr:nth-of-type(2n) {
+#admin-groups-table tr:nth-of-type(2FFn) {
   background: hsl(0 0% 0% / 0.1);
 }
 

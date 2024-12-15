@@ -208,11 +208,17 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
         </form>
         </div>
         <div className={"list-endpoint-table-wrapper"}>
-            <ExpandableDropdown></ExpandableDropdown>
+            <ExpandableDropdown buttonText={"What is a list?"}>
+                <div>Test</div>
+            </ExpandableDropdown>
         </div>
-        <div style={{display: "flex", justifyContent: "center"}}>
+        <div className={"list-endpoint-table-wrapper"}>
+            <ExpandableDropdown buttonText={"Show Endpoints"}>
+
+            </ExpandableDropdown>
+        </div>
+        {/*<div style={{display: "flex", justifyContent: "center"}}>*/}
             {/*<div>test</div>*/}
-        </div>
     </div>)
 }
 

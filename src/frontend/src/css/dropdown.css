@@ -1,14 +1,29 @@
 .custom-dropdown-wrapper {
   width: 100%;
+  border-radius: 5px;
 }
+
+/*.custom-dropdown-content {*/
+/*  width: 100%;*/
+/*}*/
 
 .custom-dropdown-button {
   display: flex;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   color: #FFFFFF;
-  background-color: #1c618f;
+  background-color: transparent;
   border: none;
+}
+
+
+
+.custom-dropdown-button:hover {
+ cursor: pointer;
 }
 
 .dropdown-menu {
