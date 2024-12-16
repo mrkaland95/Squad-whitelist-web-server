@@ -4,8 +4,9 @@ import React, {ChangeEvent, FormEvent, useState} from "react";
 import {AdminGroup, ListEndpoint} from "../../../shared-types/types";
 import ToggleButton from "../components/Toggle-Button";
 import Swal from "sweetalert2";
-import {Dropdown, DropdownButton, DropdownToggle} from "react-bootstrap";
+import {Dropdown, DropdownButton, DropdownMenu, DropdownToggle} from "react-bootstrap";
 import ExpandableDropdown from "../components/ExpandableDropdown";
+import CustomDropDownMenu from "../components/CustomDropDownMenu";
 
 
 function ListEdit() {
@@ -157,20 +158,24 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
                             {list.AdminGroups.map((group: AdminGroup) => (
                                 <div className={"list-admin-group-wrapper"}>{group.GroupName}</div>
                             ))}
-                            <DropdownButton title={"Add Group"} className={"dropdown-button"}>
-                                {adminGroups.map((group) => (
-                                    <Dropdown.Item
-                                    className={"dropdown-item"}
-                                    onClick={() => {
-                                        const newEndpoints = [...endpointData];
-                                        newEndpoints[listIndex].AdminGroups.push(group)
-                                        setEndpointData(newEndpoints)
-                                    }}>
-                                        {group.GroupName}
-                                        {/*<button className={"group-button"}>{group.GroupName}</button>*/}
-                                    </Dropdown.Item>
-                                ))}
-                            </DropdownButton>
+                            {/*<DropdownButton title={"Add Group"} className={"dropdown-button"}>*/}
+                            {/*    {adminGroups.map((group) => (*/}
+                            {/*        <Dropdown.Item*/}
+                            {/*        className={"dropdown-item"}*/}
+                            {/*        onClick={() => {*/}
+                            {/*            const newEndpoints = [...endpointData];*/}
+                            {/*            newEndpoints[listIndex].AdminGroups.push(group)*/}
+                            {/*            setEndpointData(newEndpoints)*/}
+                            {/*        }}>*/}
+                            {/*            {group.GroupName}*/}
+                            {/*            /!*<button className={"group-button"}>{group.GroupName}</button>*!/*/}
+                            {/*        </Dropdown.Item>*/}
+                            {/*    ))}*/}
+                            {/*</DropdownButton>*/}
+                            <CustomDropDownMenu buttonText={"Add Group"}>
+                                <div>Test element</div>
+
+                            </CustomDropDownMenu>
                         </td>
                         <td>
                             <ToggleButton
@@ -207,35 +212,40 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
             </div>
         </form>
         </div>
-        <div className={"list-endpoint-table-wrapper"}>
-            <ExpandableDropdown buttonText={"What is a list?"}>
-                <div>Test</div>
-            </ExpandableDropdown>
+        <div className={"generic-content-wrapper"}>
+            <HelpDropDown/>
+
         </div>
         <div className={"list-endpoint-table-wrapper"}>
             <ExpandableDropdown buttonText={"Show Endpoints"}>
-
             </ExpandableDropdown>
         </div>
-        {/*<div style={{display: "flex", justifyContent: "center"}}>*/}
-            {/*<div>test</div>*/}
     </div>)
 }
 
-function GroupButton() {
-    return(
-    <>
+function HelpDropDown() {
+    return (
+        <>
+            <h3 style={{paddingBottom: '1rem'}}><em>Help</em></h3>
+            <hr/>
+            <ExpandableDropdown buttonText={"What is a list?"} buttonTitle={"What is a list?"}>
+                <h3>A list endpoint represents in-game admin permissions</h3>
+                <p>This list </p>
+            </ExpandableDropdown>
+        </>)
+}
 
-    </>)
+
+function GroupButton() {
+    return (
+        <>
+
+        </>)
 }
 
 function CheckEndpoints() {
     return (<></>)
 }
-
-
-
-
 
 
 function GroupDropdown({setListEndpoints, index}: any) {

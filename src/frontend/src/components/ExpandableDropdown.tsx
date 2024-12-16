@@ -1,36 +1,35 @@
 import React, {useState} from "react";
 import { IoChevronDown } from "react-icons/io5";
-import '../css/dropdown.css'
+import '../css/expandabledropdown.css'
 
 
+function ExpandableDropdown({ buttonTitle, buttonText, children }: DropDownProps) {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const chevronSize = 20;
 
-function ExpandableDropdown({buttonTitle, buttonText, children}: DropDownProps) {
-    const [dropDownOpen, setDropDownOpen] = useState(false)
-    const chevronSize = 20
+    const toggleMenu = () => {
+        setMenuOpen(!menuOpen);
+    };
 
-
-    if (!dropDownOpen) {
-        return (
-            <div className="custom-dropdown-wrapper closed">
-                <button className={"custom-dropdown-button"} title={buttonTitle} type={"button"} onClick={() => setDropDownOpen(!dropDownOpen)}>
-                    <span>{buttonText}</span>
-                    <div><IoChevronDown size={chevronSize}/></div>
-                </button>
-            </div>
-        )
-    } else {
-        return (
-            <div className={"custom-dropdown-wrapper open"}>
-                <button className={"custom-dropdown-button open"} title={buttonTitle} type={"button"} onClick={() => setDropDownOpen(!dropDownOpen)}>
-                    <span>{buttonText}</span>
-                    <div className={"custom-dropdown-icon open"}><IoChevronDown size={chevronSize}/></div>
-                </button>
-                <hr/>
-                <div className={"custom-dropdown-content"}>
-                    {children}
+    return (
+        <div className={`custom-dropdown-wrapper ${menuOpen ? 'open' : ''}`}>
+            <button
+                className={`custom-dropdown-button ${menuOpen ? 'open' : ''}`}
+                title={buttonTitle}
+                type="button"
+                onClick={toggleMenu}
+            >
+                <span>{buttonText}</span>
+                <div className={`custom-dropdown-icon ${menuOpen ? 'open' : ''}`}>
+                    <IoChevronDown size={chevronSize} />
                 </div>
-            </div>)
-    }
+            </button>
+            <div className={`custom-dropdown-content ${menuOpen ? 'open' : ''}`}>
+                <hr style={{marginBottom: '10px'}}/>
+                {children}
+            </div>
+        </div>
+    );
 }
 
 interface DropDownProps {
