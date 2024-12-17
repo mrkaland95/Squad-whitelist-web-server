@@ -27,11 +27,21 @@ function CustomDropDownMenu({buttonText, children}: dropDownProps) {
     )
 }
 
-function CustomDropDownItem() {
+function CustomDropDownItem({title, children, leftIcon, rightIcon}: DropDownItemProps) {
     return (
-    <div>
-
+    <div className={"dropdown-item"} title={title}>
+        <span>{leftIcon}</span>
+        {children}
+        <span>{rightIcon}</span>
     </div>)
+}
+
+
+interface DropDownItemProps {
+    children?: React.ReactNode
+    title?: string
+    leftIcon?: any,
+    rightIcon?: any
 }
 
 interface dropDownProps {

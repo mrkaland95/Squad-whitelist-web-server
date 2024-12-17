@@ -174,7 +174,7 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
                             {/*</DropdownButton>*/}
                             <CustomDropDownMenu buttonText={"Add Group"}>
                                 <div>Test element</div>
-
+                                <div>Test</div>
                             </CustomDropDownMenu>
                         </td>
                         <td>
