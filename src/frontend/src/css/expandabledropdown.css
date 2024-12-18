@@ -5,6 +5,7 @@
 .custom-dropdown-wrapper {
   width: 100%;
   border-radius: 5px;
+  padding-bottom: 1rem;
 }
 
 .custom-dropdown-button {

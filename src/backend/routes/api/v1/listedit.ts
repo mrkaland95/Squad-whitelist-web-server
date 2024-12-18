@@ -38,8 +38,8 @@ router.post('/', isAuthenticated, async (req, res) => {
             })
         }
     } catch (err) {
-        defaultLogger.error(err)
-        // console.error(err)
+        // defaultLogger.error(err)
+        console.error(err)
         res.sendStatus(400)
         return
     }

@@ -6,7 +6,7 @@
 
 
 .list-endpoint-table-wrapper table {
-  border-collapse: collapse;
+  /*border-collapse: collapse;*/
   margin-bottom: 1rem;
   /*padding-bottom: 1rem;*/
   /*background-color: rgba(41, 48, 49, 0.76);*/
@@ -45,11 +45,9 @@
 }
 
 .list-endpoint-table-wrapper {
-  overflow-x: auto;
   border: 1px solid transparent;
   box-shadow: 0.12rem 0.12rem var(--default-box-shadow);
   background-color: var(--content-bg-color);
-  /*background-color: var(--outline-color);*/
   border-radius: 5px;
   margin: 1rem auto;
   padding: 1rem 3rem;
