@@ -1,0 +1,32 @@
+:root {
+
+}
+
+.delete-button2 {
+  padding: 0.25rem 0.4rem 0.25rem 0.25rem;
+  border-radius: 5px;
+  color: #dddddd;
+  background-color: rgba(76,0,14,0.87);
+  border: 1px solid rgba(43, 32, 32, 0.87);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  font-weight: 600;
+  transition: background-color 0.1s;
+}
+
+.delete-button2:hover {
+  background-color: rgba(113, 11, 29, 0.87);
+  border: 1px solid rgba(197, 184, 184, 0.87);
+}
+
+
+.delete-button2-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
