@@ -13,6 +13,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import AdminGroups from "../pages/AdminGroups";
 import RoleEdit from "../pages/RoleEdit";
 import ListEdit from "../pages/ListEdit";
+import SidebarNew from "./sidebar/SidebarNew";
 
 
 const queryClient = new QueryClient();
@@ -29,7 +30,7 @@ function App() {
     <div className="app-container">
         <Navbar onToggleSideBar={toggleSideBar}></Navbar>
         <div className="body">
-            {sideBarOpen && <Sidebar></Sidebar>}
+            <SidebarNew open={sideBarOpen}/>
             <div className="content-container">
                 <Routes>
                     <Route path="/" element={<Home />} />

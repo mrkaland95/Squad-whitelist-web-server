@@ -1,0 +1,148 @@
+:root {
+  --sidebar-text-color: white;
+  --sidebar-font-size: 1.1rem;
+  --sidebar-font-weight: 600;
+  --sidebar-elements-margin: 0.2rem;
+  --sidebar-hover-bg-color: rgb(62, 93, 149);
+  --sidebar-letter-spacing: 0.06rem;
+  --sidebar-line-height: 0.08rem;
+}
+
+.sidebar-container {
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  background-color: var(--nav-background-color);
+  border-right: 0.05rem solid #ffffff;
+  /*padding-top: 1.5rem;*/
+  color: #ffffff;
+  font-size: var(--sidebar-font-size);
+  font-weight: var(--sidebar-font-weight);
+  transform: translateX(-20%);
+  transition: width 0.2s ease-in-out, transform 0.2s ease-in-out;
+  overflow-y: auto;
+}
+
+.sidebar-container.open {
+  visibility: visible;
+  opacity: 1;
+  max-width: 400px;
+  width: 300px;
+  transform: translateX(0);
+  transition: width 0.2s ease-out, transform 0.3s;
+}
+
+.sidebar-container ul {
+  list-style-type: none;
+}
+
+.sidebar-container li {
+  padding: 0.2rem 0;
+  list-style: none;
+}
+
+.sidebar-container li a {
+  text-decoration: none;
+  width: 100%;
+  color: white;
+}
+
+.sidebar-dropdown-wrapper {
+  display: block;
+
+  /*margin: 0;*/
+  /*padding: 0;*/
+  /*padding: 0.2rem 0;*/
+}
+.sidebar-menu-content {
+  max-height: 0;
+  visibility: hidden;
+  transition: max-height 0.1s, transform 0.4s, opacity 0.2s;
+  transform: translateY(-5px);
+}
+
+.sidebar-menu-content.open {
+  visibility: visible;
+  max-height: 200rem;
+  transform: translateY(0);
+}
+
+.anchor-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.2rem;
+}
+
+.anchor-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-anchor {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+
+.sidebar-anchor-list {
+  display: flex;
+  transition: background-color 0.2s;
+}
+
+.sidebar-anchor-list:hover {
+  background-color: var(--sidebar-hover-bg-color);
+}
+
+.sidebar-dropdown-button {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  color: var(--sidebar-text-color);
+  font-size: var(--sidebar-font-size);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sidebar-dropdown-button:hover {
+  background-color: var(--sidebar-hover-bg-color);
+}
+
+.sidebar-dropdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(0);
+  transition: 0.2s;
+  margin-right: 0.5rem;
+}
+
+.sidebar-dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+}
+
+.sidebar-dropdown-text {
+  display: flex;
+  width: 100%;
+  margin-left: var(--sidebar-font-size);
+  justify-content: left;
+  align-items: center;
+}
+
+.sidebar-element-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
