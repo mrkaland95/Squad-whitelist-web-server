@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
 import '../css/styles.css';
 import '../css/table.css'
-import DiscordAuthentication from "./Login";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import '../css/globals.css'
 import Home from "../pages/Home";
-import {Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Profile from "../pages/Profile";
 import User from "../pages/User";
 import Whitelist from "../pages/Whitelist";
@@ -13,7 +11,10 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import AdminGroups from "../pages/AdminGroups";
 import RoleEdit from "../pages/RoleEdit";
 import ListEdit from "../pages/ListEdit";
-import SidebarNew from "./sidebar/SidebarNew";
+import SidebarNew from "./sidebar/Sidebar";
+import {NavBar} from "./navbar/NavBar";
+import AuthProvider, {useAuth} from "./AuthProvider";
+import user from "../pages/User";
 
 
 const queryClient = new QueryClient();
@@ -27,25 +28,49 @@ function App() {
 
     return (
     <QueryClientProvider client={queryClient}>
-    <div className="app-container">
-        <Navbar onToggleSideBar={toggleSideBar}></Navbar>
-        <div className="body">
-            <SidebarNew open={sideBarOpen}/>
-            <div className="content-container">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/user" element={<User />} />
-                    <Route path="/whitelist" element={<Whitelist />} />
-                    <Route path="/admingroups" element={<AdminGroups />} />
-                    <Route path="/rolesedit" element={<RoleEdit />} />
-                    <Route path="/listsedit" element={<ListEdit />} />
-                </Routes>
+        <AuthProvider>
+            <div className="app-container">
+                <NavBar sidebarOpen={sideBarOpen} sidebarToggleCb={toggleSideBar}></NavBar>
+                <div className="body">
+                    <SidebarNew open={sideBarOpen}/>
+                    <div className="content-container">
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/profile" element={<AuthenticatedRoute element={<Profile />} />} />
+                            <Route path="/user" element={<AuthenticatedRoute element={<User />} />} />
+                            <Route path="/whitelist" element={<AuthenticatedRoute element={<Whitelist />} />} />
+                            <Route path="/admingroups" element={<AdminAuthorizedRoute element={<AdminGroups />} />} />
+                            <Route path="/rolesedit" element={<AdminAuthorizedRoute element={<RoleEdit />} />} />
+                            <Route path="/listsedit" element={<AdminAuthorizedRoute element={<ListEdit />} />} />
+                        </Routes>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </AuthProvider>
     </QueryClientProvider>
     );
 }
+
+function AuthenticatedRoute({ element }: any) {
+    const user = useAuth().user?.isAuthenticated
+
+    if (!user) {
+        return <Navigate to={"/"}/>
+    }
+
+    return element
+}
+
+function AdminAuthorizedRoute({ element }: any) {
+    const isAdmin = useAuth().user?.isAdmin
+
+    if (!isAdmin) {
+        return <Navigate to={"/"}/>
+    }
+
+    return element
+}
+
+
 
 export default App;

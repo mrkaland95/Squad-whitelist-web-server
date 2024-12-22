@@ -10,6 +10,8 @@ https://squad.fandom.com/wiki/Server_Administration
  */
 
 
+import {IDiscordRole} from "../backend/schema";
+
 export enum InGameAdminPermissions {
     CHANGE_MAP = "changemap",
     CAN_SEE_ADMIN_CHAT = "canseeadminchat",
@@ -88,6 +90,10 @@ export interface Log {
     MessageType?: string,
 }
 
+export type LogTypes = {
+
+}
+
 
 export interface DiscordRole {
     RoleID: string,
@@ -99,3 +105,15 @@ export interface APIKey {
     APIKey: string
 }
 
+export interface UserResponseData {
+    isAuthenticated: boolean,
+    isAdmin: boolean,
+    discordUserName: string,
+    discordAvatar: string,
+    discordGlobalName: string,
+    userPrivilegedDiscordRoles: IDiscordRole[]
+    userSteamID: string
+    userWhitelistSlots: number
+    userWhitelistActiveDays: WeekDays[]
+    userWhitelistedSteam64IDs: { steamID: string, name?: string }[]
+}

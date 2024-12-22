@@ -54,8 +54,8 @@ router.post('/userid', isAuthenticated, async (req, res) => {
 })
 
 
-router.get('userinfo', isAuthenticated, async (req, res) => {
-    defaultLogger.debug('Received user info request...', req.originalUrl)
+router.get('/info', isAuthenticated, async (req, res) => {
+    // defaultLogger.debug('Received user info request...', req.originalUrl)
 
     if (!req.session.discordUser?.id) {
         defaultLogger.debug(`Received request with no session.`)
@@ -84,17 +84,18 @@ router.get('userinfo', isAuthenticated, async (req, res) => {
 
     const responseData = {
         isAuthenticated: true,
+        // TODO swap this out for permission strings of what the user is allowed to do.
         isAdmin: isAdmin,
         discordUserName: req.session.discordUser.username,
         discordGlobalName: req.session.discordUser.global_name,
         discordAvatar: req.session.discordUser.avatar,
         userPrivilegedDiscordRoles: validRoles,
         userSteamID: userDBData.UserID64,
-        whitelistSlots: whitelistProps.WhitelistSlots,
-        whitelistActiveDays: whitelistProps.WhitelistActiveDays,
-        whitelistedSteam64IDs: userDBData.Whitelist64IDs,
-
+        userWhitelistSlots: whitelistProps.WhitelistSlots,
+        userWhitelistActiveDays: whitelistProps.WhitelistActiveDays,
+        userWhitelistedSteam64IDs: userDBData.Whitelist64IDs,
     }
+
     defaultLogger.debug(`Sending profile response data...`)
     res.status(200).json(responseData)
 })
@@ -122,7 +123,6 @@ router.post('/validateid', isAuthenticated, async (req, res) => {
 
 
 router.get('/whitelist', async (req, res) => {
-    // TODO factor this out and use a logging middleware function.
     if (!req.session?.discordUser) {
         res.status(401).send('Unauthorized user.')
         return

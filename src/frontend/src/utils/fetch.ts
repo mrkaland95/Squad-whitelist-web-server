@@ -4,10 +4,11 @@ import {WhitelistResponseData, WhitelistRow} from "../pages/Whitelist";
 import {IDiscordUser} from "../pages/User";
 import {responseData} from "../pages/Profile";
 import {IPrivilegedRole} from "../pages/RoleEdit";
-import {ListEndpoint} from "../../../shared-types/types";
+import {ListEndpoint, UserResponseData} from "../../../shared-types/types";
 
 
 const baseURL = "http://localhost:5000";
+const baseURL2 = "http://localhost:5000/api/v1";
 
 axios.defaults.withCredentials = true;
 
@@ -116,11 +117,12 @@ export async function postListEndpoints(lists: ListEndpoint[]) {
     return result
 }
 
-
-export async function fetchUserData(): Promise<responseData> {
-    const response = await fetch(`${baseURL}/v1/user/userinfo`, {
+export async function fetchUserData(): Promise<UserResponseData> {
+    const response = await fetch(baseURL2 + "/user/info", {
         credentials: "include"
     })
+
+    console.log(response)
 
     if (!response.ok) {
         throw new Error('Unable to fetch profile data.')
@@ -128,3 +130,5 @@ export async function fetchUserData(): Promise<responseData> {
 
     return response.json()
 }
+
+

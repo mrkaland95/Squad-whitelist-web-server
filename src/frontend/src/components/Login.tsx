@@ -1,25 +1,38 @@
 import React, {useState} from 'react';
-import {goToAuthenticate} from "./Discord-Auth";
+import {generateRandomString} from "../utils/utils";
+import {useAuth} from "./AuthProvider";
 
 const loginButtonID = "login-button"
 
 function AuthenticateWithDiscordButton() {
     return (
         <div className='button-div'>
-            <button className='default-button' onClick={goToAuthenticate} id={loginButtonID}>LOGIN WITH DISCORD</button>
+            <button className='default-button' onClick={redirectToDiscordAuth} id={loginButtonID}>LOGIN WITH DISCORD</button>
         </div>
     )
 }
 
 
+export function redirectToDiscordAuth() {
+    const randomString: string = generateRandomString()
+    localStorage.setItem('oauth-string', randomString)
+
+    // TODO remove this hardcode and take it in as an .env
+    window.location.href = process.env.DISCORD_REDIRECT_URI || "https://discord.com/oauth2/authorize?client_id=1093586781703786526&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Fv1%2Fauth%2Flogin&scope=identify";
+}
+
+
+export function LoggedIn() {
+
+}
 
 
 
+export function HandleLogout() {
+
+}
 
 
-
-
-//
 // window.onload = () => {
 //     const fragment = new URLSearchParams(window.location.hash.slice(1));
 //     const [accessToken, tokenType, state] = [fragment.get('access_token'), fragment.get('token_type'), fragment.get('state')];
