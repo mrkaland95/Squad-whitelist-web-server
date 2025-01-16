@@ -52,7 +52,7 @@ router.get('/login', async (req, res) => {
     try {
         discordUser = await requestDiscordUserData(accessTokenData)
     } catch (e) {
-        res.status(401).send('Unsuccesfully authenticated')
+        res.status(401).send('Unsuccessfully authenticated')
         req.session.destroy(() => {})
         return
     }
@@ -66,12 +66,18 @@ router.get('/login', async (req, res) => {
 })
 
 
-router.get('/logout', async (req, res) => {
+router.get('/redirect', (req, res) => {
+    
+})
+
+
+router.post('/logout', async (req, res) => {
     req.session.destroy(err => {
         if (err) {
             console.error("Error when destroying session: ", err)
             res.status(500).send('Internal server error')
         } else {
+            defaultLogger.debug(`Succesfully logged out user.`)
             res.status(200).redirect('/')
         }
     })

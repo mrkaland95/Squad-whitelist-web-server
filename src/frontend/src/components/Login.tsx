@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {generateRandomString} from "../utils/utils";
 import {useAuth} from "./AuthProvider";
+import {logoutRequest} from "../utils/fetch";
+import {Navigate, useNavigate} from "react-router-dom";
 
 const loginButtonID = "login-button"
 
@@ -18,7 +20,7 @@ export function redirectToDiscordAuth() {
     localStorage.setItem('oauth-string', randomString)
 
     // TODO remove this hardcode and take it in as an .env
-    window.location.href = process.env.DISCORD_REDIRECT_URI || "https://discord.com/oauth2/authorize?client_id=1093586781703786526&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fapi%2Fv1%2Fauth%2Flogin&scope=identify";
+    // window.location.href = process.env.DISCORD_REDIRECT_URI;
 }
 
 
@@ -28,8 +30,12 @@ export function LoggedIn() {
 
 
 
-export function HandleLogout() {
-
+export async function handleLogout() {
+    await logoutRequest()
+        .then(() => {
+        })
+        .catch(error => console.error(error))
+    return (<></>)
 }
 
 

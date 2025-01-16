@@ -3,6 +3,7 @@ import {isAuthenticated} from "../../utils/utils";
 import {ListsDB} from "../../../schema";
 import {ListEndpoint} from "../../../../shared-types/types";
 import {defaultLogger} from "../../../logger";
+import {refreshListCache} from "../../../cache";
 
 const router = Router()
 
@@ -45,6 +46,7 @@ router.post('/', isAuthenticated, async (req, res) => {
     }
 
     res.sendStatus(200)
+    await refreshListCache()
 })
 
 

@@ -1,0 +1,111 @@
+
+
+.nav-sidebar-collapse-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 3rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1.8rem;
+  background-color: transparent;
+  color: #dddddd;
+  margin-left: 1rem;
+}
+
+.nav-sidebar-collapse-button:hover {
+  color: #5c6071;
+  filter: brightness(120%);
+}
+
+.navbar-new {
+  position: sticky;
+  /*top: 0;*/
+  display: flex;
+  align-items: center;
+  height: var(--navbar-height);
+  background-color: var(--nav-background-color);
+  border-bottom: var(--nav-border);
+  /*padding-left: 2rem;*/
+}
+
+/*
+Element used to fill the space between the collapse and org icons, and the login button on the right side of the navbar.
+ */
+.navbar-fill-element {
+  width: 100%;
+}
+
+.navbar-ul {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  list-style: none;
+}
+
+.navbar-new:has(li) {
+  margin: 0;
+  list-style: none;
+  text-decoration: none;
+}
+
+.navbar-new:has(a) {
+  text-decoration: none;
+  list-style: none;
+}
+
+.navbar-anchor-logo-element {
+  display: inline-block;
+  margin-left: 1rem;
+  /*width: 2rem;*/
+}
+
+.nav-login-button {
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  /*box-shadow: var(--default-box-shadow);*/
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 1rem;
+  padding: 0.3rem;
+  /*white-space: nowrap;*/
+
+}
+
+.nav-login-button:hover {
+  background-color: rgba(50, 58, 74, 0.84);
+}
+
+.login-wrapper {
+  margin-right: 1rem;
+}
+
+.nav-bar-user-button {
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nav-bar-user-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-bar-user-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}

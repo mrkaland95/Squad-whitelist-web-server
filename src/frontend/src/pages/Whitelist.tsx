@@ -36,7 +36,6 @@ function Whitelist() {
                This page is used for managing your whitelist slots for other people
             </h3>
             <hr style={{marginBottom: '1rem'}} />
-            {/*<p style={{marginBottom: '1rem'}}>Some roles only get whitelist on certain days</p>*/}
             <div className={"active-days-container"}>
                     <p><em>
                         Some discord roles may only get whitelist on certain days<br/>

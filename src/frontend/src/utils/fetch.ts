@@ -122,8 +122,6 @@ export async function fetchUserData(): Promise<UserResponseData> {
         credentials: "include"
     })
 
-    console.log(response)
-
     if (!response.ok) {
         throw new Error('Unable to fetch profile data.')
     }
@@ -131,4 +129,15 @@ export async function fetchUserData(): Promise<UserResponseData> {
     return response.json()
 }
 
+export async function logoutRequest() {
+    const response = await axios.post(baseURL2 + "/auth/logout")
 
+    console.log(response)
+
+    if (response.status !== 200) {
+        throw new Error("Something went wrong when attempting to logout")
+    }
+
+    return response
+
+}

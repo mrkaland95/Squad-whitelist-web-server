@@ -29,16 +29,20 @@ async function main() {
     await discordClient.login(env.discordAppToken)
 
     await initializeWhitelistGroup()
-    await refreshDiscordUsersAndRoles()
-    await refreshUsersCache()
-    await refreshListCache()
-    await getAllUsersWithSpecialRoles()
-    await refreshDiscordRoles(env.discordGuildID)
+    // await refreshListCache()
+    // await refreshDiscordRoles(env.discordGuildID)
 
-    setInterval(async () => {
-        await refreshUsersCache()
-        await refreshDiscordRoles(env.discordGuildID)
-    }, 60 * 1000)
+    await updateCaches()
+
+    setInterval(updateCaches, 60 * 1000)
+}
+
+
+async function updateCaches() {
+    await refreshUsersCache()
+    await refreshDiscordRoles(env.discordGuildID)
+    await refreshDiscordUsersAndRoles()
+    await refreshListCache()
 }
 
 

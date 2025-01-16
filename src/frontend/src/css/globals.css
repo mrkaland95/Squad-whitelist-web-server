@@ -1,0 +1,17 @@
+:root {
+  --primary-color: #2c333d;
+  --backup-color: #2c333d;
+  --nav-background-color: rgba(30, 39, 50, 0.84);
+  --nav-border: 0.13rem solid white;
+  --navbar-height: 4rem;
+  --secondary-color: #423451;
+  --outline-color: rgba(68, 74, 91, 0.65);
+  --default-box-shadow: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);
+  --new-box-color: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);
+  --error-color: #d9534f;
+  --success-color: rgba(40, 241, 9, 0.93);
+  --text-color: #FFFFFF;
+  --font-size-large: 1.5rem;
+  --spacing: 1rem;
+  --primary-font-size: 1rem;
+}

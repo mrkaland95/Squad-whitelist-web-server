@@ -9,6 +9,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 function AuthProvider({ children } : AuthProviderProps) {
     const [user, setUser] = useState<UserResponseData | null>(null);
     const isAuthenticated = !!user?.isAuthenticated
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchUserData().then((res) => {
@@ -18,13 +19,13 @@ function AuthProvider({ children } : AuthProviderProps) {
                 setUser(null);
             }
         }).catch((err) => {
-            console.error("Error occuring when retrieving authentication data.")
+            console.error("Error occurring when retrieving authentication data.")
             setUser(null)
-        });
+        }).finally(() => setLoading(false));
     }, []);
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, setUser}}>
+        <AuthContext.Provider value={{isAuthenticated, user, setUser, loading}}>
             {children}
         </AuthContext.Provider>
     )
@@ -48,8 +49,8 @@ interface AuthContextProps {
     isAuthenticated: boolean;
     user: UserResponseData | null | undefined;
     setUser: React.Dispatch<React.SetStateAction<UserResponseData | null>>
+    loading: boolean;
 }
-
 
 
 export default AuthProvider;

@@ -35,13 +35,34 @@ function App() {
                     <SidebarNew open={sideBarOpen}/>
                     <div className="content-container">
                         <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/profile" element={<AuthenticatedRoute element={<Profile />} />} />
-                            <Route path="/user" element={<AuthenticatedRoute element={<User />} />} />
-                            <Route path="/whitelist" element={<AuthenticatedRoute element={<Whitelist />} />} />
-                            <Route path="/admingroups" element={<AdminAuthorizedRoute element={<AdminGroups />} />} />
-                            <Route path="/rolesedit" element={<AdminAuthorizedRoute element={<RoleEdit />} />} />
-                            <Route path="/listsedit" element={<AdminAuthorizedRoute element={<ListEdit />} />} />
+                            <Route
+                                path="/"
+                                element={<Home />}
+                            />
+                            <Route
+                                path="/profile"
+                                element={<AuthenticatedRoute element={<Profile/>} />}
+                            />
+                            <Route
+                                path="/user"
+                                element={<AuthenticatedRoute element={<User/>} />}
+                            />
+                            <Route
+                                path="/whitelist"
+                                element={<AuthenticatedRoute element={<Whitelist/>} />}
+                            />
+                            <Route
+                                path="/admingroups"
+                                element={<AdminAuthorizedRoute element={<AdminGroups/>} />}
+                            />
+                            <Route
+                                path="/rolesedit"
+                                element={<AdminAuthorizedRoute element={<RoleEdit />} />}
+                            />
+                            <Route
+                                path="/listsedit"
+                                element={<AdminAuthorizedRoute element={<ListEdit />} />}
+                            />
                         </Routes>
                     </div>
                 </div>
@@ -51,26 +72,38 @@ function App() {
     );
 }
 
-function AuthenticatedRoute({ element }: any) {
-    const user = useAuth().user?.isAuthenticated
+function AuthenticatedRoute({ element }: ProtectedRouteProps) {
+    const { user, loading } = useAuth()
+
+    if (loading) {
+        return <div>Loading...</div>
+    }
 
     if (!user) {
-        return <Navigate to={"/"}/>
+        return <Navigate to="/" />
     }
 
-    return element
+    return element;
 }
 
-function AdminAuthorizedRoute({ element }: any) {
-    const isAdmin = useAuth().user?.isAdmin
 
-    if (!isAdmin) {
-        return <Navigate to={"/"}/>
+function AdminAuthorizedRoute({ element }: ProtectedRouteProps) {
+    const { user, loading } = useAuth()
+
+    if (loading) {
+        return <div>Loading...</div>
     }
 
-    return element
+    if (!user?.isAdmin) {
+        return <Navigate to="/" />
+    }
+
+    return element;
 }
 
+interface ProtectedRouteProps {
+    element: JSX.Element;
+}
 
 
 export default App;

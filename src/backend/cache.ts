@@ -163,8 +163,8 @@ export async function refreshListCache() {
     const listsData = await ListsDB.find({
         Enabled: true,
     })
-
     const discordRolesData = await RolesDB.find()
+
     listsCache = await generateLists(listsData, discordRolesData, usersData)
 }
 
@@ -263,11 +263,11 @@ export async function getDiscordRoles(guildID: string) {
     return discordRoles
 }
 
+
 export async function refreshDiscordRoles(guildID: string): Promise<DiscordRole[]> {
     allDiscordRolesCache = await getDiscordRoles(guildID)
     return allDiscordRolesCache
 }
-
 
 
 // Meant to be a rough analogue of the "performScrub" function of the old whitelist server.
@@ -340,7 +340,7 @@ export async function getAllUsersWithSpecialRoles() {
  * @param allValidRoles {IPrivilegedRole[]}
  * @return {IPrivilegedRole[]}
  */
-function getUsersValidRoles(user: IDiscordUser, allValidRoles: IPrivilegedRole[]) {
+function getUsersValidRoles(user: IDiscordUser, allValidRoles: IPrivilegedRole[]): IPrivilegedRole[] {
     return allValidRoles.filter(role => {
         return user.Roles.includes(role.RoleID)
     })

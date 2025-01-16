@@ -8,6 +8,7 @@ import {Dropdown, DropdownButton, DropdownMenu, DropdownToggle} from "react-boot
 import ExpandableDropdown from "../components/ExpandableDropdown";
 import CustomDropDownMenu, {CustomDropDownItem} from "../components/CustomDropDownMenu";
 import AdminGroups from "./AdminGroups";
+import DeleteButton from "../components/delete-button/DeleteButton";
 
 
 function ListEdit() {
@@ -197,8 +198,8 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
                                     !list.AdminGroups.some(g => g.GroupName === group.GroupName)
                                         && <CustomDropDownItem onItemClicked={() => onGroupAdd(listIndex, group)}>
                                                 <span>{group.GroupName}</span>
-                                            </CustomDropDownItem>
-                                ))}
+                                            </CustomDropDownItem>))
+                                }
                             </CustomDropDownMenu>
                         </td>
                         <td>
@@ -217,14 +218,15 @@ function ListForm({adminGroups, savedEndpoints}: formProps) {
                             />
                         </td>
                         <td>
-                            <button
-                                type={"button"}
-                                className={"delete-button"}
-                                title={"Delete List Endpoint"}
-                                onClick={() => onDelete(listIndex)}
-                            >
-                                DELETE
-                            </button>
+                            <DeleteButton buttonText={"Delete"} buttonTitle={"Delete list endpoint"} onClick={() => onDelete(listIndex)} />
+                            {/*<button*/}
+                            {/*    type={"button"}*/}
+                            {/*    className={"delete-button"}*/}
+                            {/*    title={"Delete List Endpoint"}*/}
+                            {/*    onClick={() => onDelete(listIndex)}*/}
+                            {/*>*/}
+                            {/*    DELETE*/}
+                            {/*</button>*/}
                         </td>
                     </tr>
                 ))}

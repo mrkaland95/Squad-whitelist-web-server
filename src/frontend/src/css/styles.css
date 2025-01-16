@@ -1,18 +1,19 @@
-:root {
-  --primary-color: #2c333d;
-  --backup-color: #2c333d;
-  --nav-background-color: rgba(35, 47, 58, 0.84);
-  /*--nav-background-color: #0d1724;*/
-  --secondary-color: #423451;
-  --outline-color: rgba(68, 74, 91, 0.65);
-  --default-box-shadow: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);
-  --error-color: #d9534f;
-  --success-color: rgba(40, 241, 9, 0.93);
-  --text-color: #FFFFFF;
-  --font-size-large: 1.5rem;
-  --spacing: 1rem;
-  --primary-font-size: 1rem;
-}
+/*:root {*/
+/*  --primary-color: #2c333d;*/
+/*  --backup-color: #2c333d;*/
+/*  --nav-background-color: rgba(35, 47, 58, 0.84);*/
+/*  --nav-border: 0.05rem solid white;*/
+/*  --secondary-color: #423451;*/
+/*  --outline-color: rgba(68, 74, 91, 0.65);*/
+/*  --default-box-shadow: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);*/
+/*  --new-box-color: 0.1rem 0.1rem rgba(26, 20, 20, 0.25);*/
+/*  --error-color: #d9534f;*/
+/*  --success-color: rgba(40, 241, 9, 0.93);*/
+/*  --text-color: #FFFFFF;*/
+/*  --font-size-large: 1.5rem;*/
+/*  --spacing: 1rem;*/
+/*  --primary-font-size: 1rem;*/
+/*}*/
 
 * {
   /*border: lime 1px solid;*/
@@ -28,6 +29,7 @@
 .body {
   min-height: 100vh;
   display: flex;
+  overflow-y: auto;
 }
 
 .app-container {
@@ -42,7 +44,6 @@
   color: #d9d9d9;
   width: 100%;
   overflow: auto;
-  /*overflow-x: scroll;*/
 }
 
 .content-container table {
@@ -409,7 +410,7 @@ th {
   margin: 0.25rem 0;
   font-size: 1rem;
   color: white;
-  background-color: #00b06a;
+  background-color: rgba(1, 106, 66, 0.94);
   border: none;
   border-radius: 5px;
   transition: background-color 0.1s;
@@ -417,7 +418,7 @@ th {
 }
 
 .remove-group-button:hover {
-  background-color: #08754b;
+  background-color: #0e9c63;
 }
 
 .list-admin-group-wrapper {
